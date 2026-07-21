@@ -248,7 +248,6 @@ app.get('/admin', (req, res) => {
 app.post(
   '/admin/login',
   loginLimiter,
-  doubleCsrfProtection,
   [
     body('username').trim().notEmpty().withMessage('Username is required'),
     body('password').trim().notEmpty().withMessage('Password is required')
