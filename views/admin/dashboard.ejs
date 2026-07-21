@@ -235,7 +235,12 @@
             <input type="text" id="mapName" name="name" class="form-control bg-dark-glass text-light border-cyan" required placeholder="e.g. Grand Piece Online">
           </div>
           <div class="mb-3">
-            <label for="mapImage" class="form-label font-orbitron small text-cyan">MAP IMAGE (JPG, PNG, WEBP)</label>
+            <label for="mapImageUrl" class="form-label font-orbitron small text-cyan">IMAGE URL (Imgur, Discord CDN, Roblox Link)</label>
+            <input type="url" id="mapImageUrl" name="image_url" class="form-control bg-dark-glass text-light border-cyan" placeholder="https://i.imgur.com/example.png">
+            <div class="form-text text-secondary small">Paste a direct image URL OR upload a file below.</div>
+          </div>
+          <div class="mb-3">
+            <label for="mapImage" class="form-label font-orbitron small text-cyan">OR UPLOAD IMAGE FILE</label>
             <input type="file" id="mapImage" name="image" class="form-control bg-dark-glass text-light border-cyan" accept="image/*">
           </div>
           <div class="mb-3">

@@ -59,21 +59,33 @@
     </div>
   </div>
 
-  <!-- Scripts List Section -->
+  <!-- Category Filter Tabs & Scripts List Section -->
   <section id="scriptsList" class="py-3">
-    <h3 class="font-orbitron text-white mb-4"><i class="fa-solid fa-scroll me-2 text-zinc-muted"></i>AVAILABLE SCRIPTS</h3>
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+      <h3 class="font-orbitron text-white mb-0"><i class="fa-solid fa-scroll me-2 text-zinc-muted"></i>AVAILABLE SCRIPTS</h3>
+      
+      <!-- Category Filter Pills -->
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-zinc-dark btn-sm rounded-pill px-3 active filter-category-btn" data-category="ALL">All</button>
+        <button class="btn btn-outline-zinc btn-sm rounded-pill px-3 filter-category-btn" data-category="Farming">Farming</button>
+        <button class="btn btn-outline-zinc btn-sm rounded-pill px-3 filter-category-btn" data-category="Combat">Combat</button>
+        <button class="btn btn-outline-zinc btn-sm rounded-pill px-3 filter-category-btn" data-category="ESP">ESP</button>
+        <button class="btn btn-outline-zinc btn-sm rounded-pill px-3 filter-category-btn" data-category="Utility">Utility</button>
+      </div>
+    </div>
 
     <% if (scripts && scripts.length > 0) { %>
-      <div class="row g-4">
+      <div class="row g-4" id="scriptsGrid">
         <% scripts.forEach(script => { 
              const loaderShortcut = `loadstring(game:HttpGet("${protocol}://${reqHeadersHost}/api/scripts/${script.id}/load"))()`;
+             const isLoggedIn = typeof currentUser !== 'undefined' && currentUser;
         %>
-          <div class="col-12">
+          <div class="col-12 script-card-item" data-category="<%= script.category %>">
             <div class="card glass-card border-zinc rounded-4 overflow-hidden shadow-lg hover-glow">
               <div class="card-header bg-transparent border-zinc d-flex flex-wrap align-items-center justify-content-between gap-2 p-3 p-md-4">
                 <div>
                   <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron mb-2 me-2"><%= script.category %></span>
-                  <span class="badge bg-dark text-emerald border border-secondary font-orbitron mb-2"><i class="fa-solid fa-lock me-1"></i> EXECUTOR LOADSTRING</span>
+                  <span class="badge bg-dark text-emerald border border-secondary font-orbitron mb-2"><i class="fa-solid fa-check-double me-1"></i> UNDETECTED</span>
                   <h4 class="font-orbitron text-white mb-0"><%= script.title %></h4>
                 </div>
                 
@@ -83,17 +95,23 @@
                     <i class="fa-solid fa-heart me-1 text-rose like-btn-heart"></i> <span class="like-count"><%= script.like_count || 0 %></span>
                   </button>
 
-                  <button class="btn btn-outline-zinc btn-sm rounded-pill font-orbitron px-3" 
-                          onclick="addToLoadout('<%= script.id %>', '<%= script.title.replace(/'/g, "\\'") %>', `<%= loaderShortcut %>`)">
-                    <i class="fa-solid fa-plus me-1"></i> Add to Loadout
-                  </button>
-                  
-                  <button class="btn btn-zinc-white btn-sm px-4 copy-script-btn font-orbitron"
-                          data-script-id="<%= script.id %>"
-                          data-script-title="<%= script.title %>"
-                          data-script-code="<%= loaderShortcut %>">
-                    <i class="fa-solid fa-copy me-1"></i> Copy Loader
-                  </button>
+                  <% if (isLoggedIn) { %>
+                    <button class="btn btn-outline-zinc btn-sm rounded-pill font-orbitron px-3" 
+                            onclick="addToLoadout('<%= script.id %>', '<%= script.title.replace(/'/g, "\\'") %>', `<%= loaderShortcut %>`)">
+                      <i class="fa-solid fa-plus me-1"></i> Add to Loadout
+                    </button>
+                    
+                    <button class="btn btn-zinc-white btn-sm px-4 copy-script-btn font-orbitron"
+                            data-script-id="<%= script.id %>"
+                            data-script-title="<%= script.title %>"
+                            data-script-code="<%= loaderShortcut %>">
+                      <i class="fa-solid fa-copy me-1"></i> Copy Loader
+                    </button>
+                  <% } else { %>
+                    <a href="/profile" class="btn btn-zinc-white btn-sm px-4 font-orbitron">
+                      <i class="fa-solid fa-lock me-1"></i> Sign In to Copy
+                    </a>
+                  <% } %>
                 </div>
               </div>
 
@@ -106,8 +124,21 @@
                     <small class="text-uppercase text-zinc-light font-orbitron" style="font-size: 0.75rem;"><i class="fa-solid fa-bolt me-1 text-emerald"></i> Executor Loadstring Shortcut</small>
                     <small class="text-zinc-subtle"><i class="fa-solid fa-shield-halved me-1 text-emerald"></i> Source Protected</small>
                   </div>
-                  <pre class="bg-dark-gradient p-3 rounded-3 text-white border border-secondary overflow-x-auto fs-6 font-monospace mb-0" style="max-height: 180px;"><code class="language-lua"><%= loaderShortcut %></code></pre>
+                  
+                  <% if (isLoggedIn) { %>
+                    <pre class="bg-dark-gradient p-3 rounded-3 text-white border border-secondary overflow-x-auto fs-6 font-monospace mb-0" style="max-height: 180px;"><code class="language-lua"><%= loaderShortcut %></code></pre>
+                  <% } else { %>
+                    <div class="bg-dark-gradient p-4 rounded-3 text-center border border-secondary">
+                      <i class="fa-solid fa-lock text-zinc-muted fs-3 mb-2"></i>
+                      <h6 class="font-orbitron text-white mb-1">PROTECTED EXECUTOR SCRIPT</h6>
+                      <p class="text-zinc-muted small mb-3">Please sign in with your Google account to unlock and copy this script shortcut.</p>
+                      <a href="/profile" class="btn btn-zinc-white btn-sm px-4 rounded-pill font-orbitron">
+                        <i class="fa-solid fa-user me-1"></i> Sign In To Unlock
+                      </a>
+                    </div>
+                  <% } %>
                 </div>
+
 
                 <!-- Community Comments Drawer -->
                 <div class="comments-section bg-dark-glass p-3 rounded-3 border border-secondary">
@@ -290,8 +321,29 @@
           console.error(err);
         }
       });
+    // Category Filter Handler
+    document.querySelectorAll('.filter-category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-category-btn').forEach(b => {
+          b.classList.remove('active', 'btn-zinc-dark');
+          b.classList.add('btn-outline-zinc');
+        });
+        btn.classList.add('active', 'btn-zinc-dark');
+        btn.classList.remove('btn-outline-zinc');
+
+        const cat = btn.getAttribute('data-category');
+        document.querySelectorAll('.script-card-item').forEach(card => {
+          const itemCat = card.getAttribute('data-category');
+          if (cat === 'ALL' || itemCat.toLowerCase() === cat.toLowerCase()) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
     });
   });
+
 
   async function fetchComments(scriptId, container) {
     try {

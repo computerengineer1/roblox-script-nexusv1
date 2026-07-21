@@ -507,10 +507,16 @@ app.post(
       return res.redirect(`/admin/dashboard?error=${encodeURIComponent(errors.array()[0].msg)}`);
     }
 
-    const { name, description } = req.body;
-    const imagePath = req.file
-      ? `/uploads/maps/${req.file.filename}`
-      : 'https://via.placeholder.com/800x400/0a0a1a/00f0ff?text=' + encodeURIComponent(name);
+    const { name, description, image_url } = req.body;
+    let imagePath = image_url && image_url.trim() ? image_url.trim() : null;
+
+    if (!imagePath && req.file) {
+      imagePath = `/uploads/maps/${req.file.filename}`;
+    }
+
+    if (!imagePath) {
+      imagePath = 'https://via.placeholder.com/800x400/09090b/27272a?text=' + encodeURIComponent(name);
+    }
 
     try {
       await pool.execute(

@@ -110,8 +110,8 @@ async function seed() {
     console.log('✅ All database tables created/verified successfully.');
 
     // 1. Seed Admin User
-    const adminUsername = 'admin';
-    const adminPassword = 'admin123';
+    const adminUsername = '72430170';
+    const adminPassword = 'Okgg123321okgg';
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(adminPassword, saltRounds);
 
@@ -120,7 +120,8 @@ async function seed() {
       'INSERT INTO admin_users (username, password_hash) VALUES (?, ?)',
       [adminUsername, passwordHash]
     );
-    console.log(`✅ Default admin created (username: ${adminUsername}, password: ${adminPassword})`);
+    console.log(`✅ Admin created (username: ${adminUsername})`);
+
 
     // Seed Demo User
     const [demoUsers] = await pool.execute('SELECT * FROM users WHERE email = ?', ['demo@robloxnexus.com']);
