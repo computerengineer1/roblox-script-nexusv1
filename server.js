@@ -12,7 +12,7 @@ const pool = require('./src/config/db');
 const { securityHeaders } = require('./src/middleware/security');
 const { globalLimiter, loginLimiter } = require('./src/middleware/rateLimiter');
 const { requireAuth, generateTokens, setAuthCookies } = require('./src/middleware/auth');
-const { upload, validateImageMagicBytes } = require('./src/middleware/upload');
+const { upload, processUploadedImage } = require('./src/middleware/upload');
 const { sanitizeLua } = require('./src/utils/sanitizeLua');
 
 const app = express();
@@ -526,8 +526,6 @@ app.post(
   '/admin/maps/add',
   requireAuth,
   upload.single('image'),
-  validateImageMagicBytes,
-
   [
     body('name').trim().notEmpty().withMessage('Map name is required')
   ],
@@ -540,28 +538,32 @@ app.post(
     const { name, description, image_url } = req.body;
     let imagePath = null;
 
+    // Priority 1: URL pasted by admin
     if (image_url && image_url.trim()) {
       const inputUrl = image_url.trim();
-      
-      // Smart Roblox Link Parser
+
+      // Smart Roblox Link Parser - extract numeric ID from any Roblox URL format
       const rbxAssetMatch = inputUrl.match(/rbxassetid:\/\/(\d+)/i);
       const robloxIdMatch = inputUrl.match(/roblox\.com\/(?:games|library|catalog|asset|badges)\/(\d+)/i);
 
       if (rbxAssetMatch) {
-        imagePath = `https://assetdelivery.roblox.com/v1/asset/?id=${rbxAssetMatch[1]}`;
+        imagePath = `https://www.roblox.com/asset-thumbnail/image?assetId=${rbxAssetMatch[1]}&width=768&height=432&format=png`;
       } else if (robloxIdMatch) {
-        imagePath = `https://assetdelivery.roblox.com/v1/asset/?id=${robloxIdMatch[1]}`;
+        imagePath = `https://www.roblox.com/asset-thumbnail/image?assetId=${robloxIdMatch[1]}&width=768&height=432&format=png`;
       } else if (/^\d+$/.test(inputUrl)) {
-        imagePath = `https://assetdelivery.roblox.com/v1/asset/?id=${inputUrl}`;
+        imagePath = `https://www.roblox.com/asset-thumbnail/image?assetId=${inputUrl}&width=768&height=432&format=png`;
       } else {
+        // Direct image URL (Imgur, Discord CDN, etc.)
         imagePath = inputUrl;
       }
     }
 
+    // Priority 2: File uploaded by admin (converted to base64 data URI)
     if (!imagePath && req.file) {
-      imagePath = `/uploads/maps/${req.file.filename}`;
+      imagePath = processUploadedImage(req.file);
     }
 
+    // Priority 3: Auto-generated placeholder
     if (!imagePath) {
       imagePath = 'https://via.placeholder.com/800x400/09090b/27272a?text=' + encodeURIComponent(name);
     }
