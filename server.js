@@ -538,7 +538,25 @@ app.post(
     }
 
     const { name, description, image_url } = req.body;
-    let imagePath = image_url && image_url.trim() ? image_url.trim() : null;
+    let imagePath = null;
+
+    if (image_url && image_url.trim()) {
+      const inputUrl = image_url.trim();
+      
+      // Smart Roblox Link Parser
+      const rbxAssetMatch = inputUrl.match(/rbxassetid:\/\/(\d+)/i);
+      const robloxIdMatch = inputUrl.match(/roblox\.com\/(?:games|library|catalog|asset|badges)\/(\d+)/i);
+
+      if (rbxAssetMatch) {
+        imagePath = `https://assetdelivery.roblox.com/v1/asset/?id=${rbxAssetMatch[1]}`;
+      } else if (robloxIdMatch) {
+        imagePath = `https://assetdelivery.roblox.com/v1/asset/?id=${robloxIdMatch[1]}`;
+      } else if (/^\d+$/.test(inputUrl)) {
+        imagePath = `https://assetdelivery.roblox.com/v1/asset/?id=${inputUrl}`;
+      } else {
+        imagePath = inputUrl;
+      }
+    }
 
     if (!imagePath && req.file) {
       imagePath = `/uploads/maps/${req.file.filename}`;
