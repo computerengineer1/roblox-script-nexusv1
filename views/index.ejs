@@ -9,14 +9,14 @@
     <div class="animate-fade-in">
       <div class="hero-badge-pill mb-4">
         <span class="badge bg-emerald text-dark font-orbitron px-2 py-1 me-1"><i class="fa-solid fa-bolt"></i> v2.0 ACTIVE</span>
-        <span class="text-zinc-light">Next-Gen Roblox Script Vault</span>
+        <span class="text-zinc-light" data-i18n="hero_badge">Next-Gen Roblox Script Vault</span>
       </div>
 
       <h1 class="display-3 font-orbitron fw-extrabold text-white mb-3 tracking-tight">
-        ROBLOX SCRIPT <span class="text-zinc-muted">NEXUS</span>
+        <span data-i18n="hero_title_1">ROBLOX SCRIPT</span> <span class="text-zinc-muted" data-i18n="hero_title_2">NEXUS</span>
       </h1>
       
-      <p class="lead text-zinc-muted max-w-700 mx-auto mb-4 animate-fade-in animate-delay-1">
+      <p class="lead text-zinc-muted max-w-700 mx-auto mb-4 animate-fade-in animate-delay-1" data-i18n="hero_desc">
         High-performance, obfuscated Lua scripts & loadout builder for top Roblox game maps. 100% Free, secure, & updated daily.
       </p>
 
@@ -35,9 +35,9 @@
           <span class="input-group-text bg-dark-glass text-zinc-muted border-zinc border-end-0">
             <i class="fa-solid fa-magnifying-glass"></i>
           </span>
-          <input type="text" id="searchInput" class="form-control bg-dark-glass text-white border-zinc border-start-0" placeholder="Search game maps or scripts (e.g. Blox Fruits, Aimbot)..." autocomplete="off">
+          <input type="text" id="searchInput" class="form-control bg-dark-glass text-white border-zinc border-start-0" placeholder="Search game maps or scripts (e.g. Blox Fruits, Aimbot)..." data-i18n-placeholder="search_placeholder" autocomplete="off">
           <button class="btn btn-zinc-white font-orbitron px-4" type="button" id="searchBtn">
-            SEARCH
+            <span data-i18n="search_btn">SEARCH</span>
           </button>
         </div>
 
@@ -53,8 +53,8 @@
   <% if (featuredMaps && featuredMaps.length > 0) { %>
     <section class="featured-section mb-5">
       <div class="d-flex align-items-center justify-content-between mb-3">
-        <h4 class="font-orbitron text-white mb-0"><i class="fa-solid fa-fire text-rose me-2"></i>FEATURED MAPS</h4>
-        <span class="badge bg-dark border border-secondary text-zinc-muted px-3 py-2 font-orbitron">TRENDING NOW</span>
+        <h4 class="font-orbitron text-white mb-0"><i class="fa-solid fa-fire text-rose me-2"></i><span data-i18n="featured_maps">FEATURED MAPS</span></h4>
+        <span class="badge bg-dark border border-secondary text-zinc-muted px-3 py-2 font-orbitron" data-i18n="trending_now">TRENDING NOW</span>
       </div>
 
       <div id="featuredCarousel" class="carousel slide carousel-fade rounded-4 overflow-hidden border-zinc shadow-lg" data-bs-ride="carousel">
@@ -98,7 +98,7 @@
   <!-- All Maps Grid Section -->
   <section class="maps-grid-section py-3">
     <div class="d-flex align-items-center justify-content-between mb-4">
-      <h4 class="font-orbitron text-white mb-0"><i class="fa-solid fa-gamepad me-2 text-zinc-muted"></i>GAME MAP VAULT</h4>
+      <h4 class="font-orbitron text-white mb-0"><i class="fa-solid fa-gamepad me-2 text-zinc-muted"></i><span data-i18n="game_map_vault">GAME MAP VAULT</span></h4>
       <span class="text-zinc-subtle small font-orbitron">Total Maps: <%= maps ? maps.length : 0 %></span>
     </div>
 
@@ -123,7 +123,7 @@
                 </p>
                 <div class="d-flex align-items-center justify-content-between mt-auto">
                   <a href="/map/<%= map.id %>" class="btn btn-zinc-dark rounded-pill w-100 font-orbitron py-2">
-                    View Scripts <i class="fa-solid fa-chevron-right ms-1"></i>
+                    <span data-i18n="view_scripts">View Scripts</span> <i class="fa-solid fa-chevron-right ms-1"></i>
                   </a>
                 </div>
               </div>

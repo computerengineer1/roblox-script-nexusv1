@@ -288,3 +288,148 @@ h1, h2, h3, h4, h5, h6, .font-orbitron {
 .max-w-500 { max-width: 500px; }
 .min-h-250 { min-height: 250px; }
 .bg-dark-gradient { background: linear-gradient(180deg, #09090b 0%, #121215 100%); }
+
+/* ===== RTL Language Support ===== */
+[dir="rtl"] body {
+  direction: rtl;
+  text-align: right;
+}
+[dir="rtl"] .ms-1, [dir="rtl"] .ms-2, [dir="rtl"] .ms-3 {
+  margin-left: 0 !important;
+}
+[dir="rtl"] .me-1, [dir="rtl"] .me-2, [dir="rtl"] .me-3 {
+  margin-right: 0 !important;
+}
+[dir="rtl"] .text-md-start { text-align: right !important; }
+[dir="rtl"] .text-md-end { text-align: left !important; }
+[dir="rtl"] .navbar-nav { margin-left: 0; margin-right: auto; }
+[dir="rtl"] .fa-chevron-right::before { content: "\f053"; }
+[dir="rtl"] .fa-arrow-right::before { content: "\f060"; }
+
+/* ===== Additional Animations ===== */
+@keyframes shimmer {
+  0% { background-position: -400% 0; }
+  100% { background-position: 400% 0; }
+}
+
+@keyframes floatUp {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 15px rgba(255,255,255,0.05); }
+  50% { box-shadow: 0 0 35px rgba(255,255,255,0.12); }
+}
+
+.hero-section {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(2px 2px at 40% 70%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(2px 2px at 60% 40%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.1), transparent);
+  animation: floatUp 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card stagger animation on scroll */
+.map-card-col {
+  opacity: 0;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.map-card-col:nth-child(1) { animation-delay: 0.05s; }
+.map-card-col:nth-child(2) { animation-delay: 0.1s; }
+.map-card-col:nth-child(3) { animation-delay: 0.15s; }
+.map-card-col:nth-child(4) { animation-delay: 0.2s; }
+.map-card-col:nth-child(5) { animation-delay: 0.25s; }
+.map-card-col:nth-child(6) { animation-delay: 0.3s; }
+.map-card-col:nth-child(7) { animation-delay: 0.35s; }
+.map-card-col:nth-child(8) { animation-delay: 0.4s; }
+.map-card-col:nth-child(9) { animation-delay: 0.45s; }
+
+/* ===== Search Dropdown Enhancements ===== */
+.search-wrapper {
+  position: relative;
+  z-index: 100;
+}
+
+.search-dropdown-menu {
+  z-index: 9999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  overflow: visible !important;
+}
+
+.search-dropdown-menu .list-group-item {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.search-dropdown-menu .list-group-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.search-dropdown-menu img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-muted);
+}
+
+/* ===== Footer Polish ===== */
+.nexus-footer {
+  background: rgba(9, 9, 11, 0.95);
+  border-color: var(--border-muted) !important;
+}
+
+.nexus-footer a:hover {
+  color: #ffffff !important;
+  transition: color 0.2s ease;
+}
+
+/* ===== Mobile Responsiveness ===== */
+@media (max-width: 768px) {
+  .display-3 { font-size: 2rem !important; }
+  .hero-section { padding: 2rem 0 !important; }
+  .search-input-group { flex-wrap: nowrap; }
+  .search-dropdown-menu { max-height: 300px; }
+}
+
+/* ===== Smooth link transitions ===== */
+a { transition: color 0.2s ease, opacity 0.2s ease; }
+a:hover { opacity: 0.95; }
+
+/* ===== Badge Enhancements ===== */
+.bg-emerald { background-color: var(--accent-emerald) !important; }
+
+/* ===== Skeleton loader (for search) ===== */
+.skeleton {
+  background: linear-gradient(90deg, #18181b 25%, #27272a 50%, #18181b 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}

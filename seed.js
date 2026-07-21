@@ -149,13 +149,69 @@ async function seed() {
             title: 'Auto Farm & Fast Attack Ultimate',
             category: 'Farming',
             description: 'Automated level farming, mob auto-aggro, and zero delay attack speed boost.',
-            code: `-- Roblox Script Nexus - Blox Fruits Auto Farm\nlocal Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexus/ui/main/lib.lua"))()\nlocal Window = Library:CreateWindow("Blox Fruits Nexus")\n\nlocal FarmTab = Window:CreateTab("Auto Farm")\nFarmTab:CreateToggle("Enable Auto Farm", function(state)\n    _G.AutoFarm = state\n    while _G.AutoFarm do\n        task.wait(0.1)\n        print("[NEXUS] Auto-farming closest mob...")\n    end\nend)`
+            code: `-- Roblox Script Nexus - Blox Fruits Auto Farm
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Blox Fruits Auto Farm Loaded Successfully!",
+        Duration = 5
+    })
+end)
+
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local Window = OrionLib:MakeWindow({Name = "Blox Fruits - Script Nexus", HidePremium = false, SaveConfig = true, ConfigFolder = "NexusConfig"})
+
+local FarmTab = Window:MakeTab({Name = "Auto Farm", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+FarmTab:AddToggle({
+    Name = "Enable Auto Level Farm",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoFarm = Value
+        if Value then
+            print("[NEXUS] Auto Farm Enabled")
+        end
+    end    
+})
+FarmTab:AddButton({
+    Name = "Fast Attack Speed (On)",
+    Callback = function()
+        print("[NEXUS] Fast Attack Activated")
+    end
+})
+
+OrionLib:Init()`
           },
           {
             title: 'Devil Fruit Finder & Store Notifier',
             category: 'ESP',
-            description: 'Highlights spawned fruits on map with distance indicators and sends Discord webhooks when rare fruits appear.',
-            code: `-- Blox Fruits Fruit ESP & Finder\nlocal ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/nexus/esp/main.lua"))()\nESP.Fruits = true\nESP:Enable()\nprint("[NEXUS] Devil Fruit ESP Active!")`
+            description: 'Highlights spawned fruits on map with distance indicators and notifies when rare fruits appear.',
+            code: `-- Roblox Script Nexus - Fruit Finder ESP
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Devil Fruit ESP Activated!",
+        Duration = 5
+    })
+end)
+
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local Window = OrionLib:MakeWindow({Name = "Fruit Finder - Script Nexus", HidePremium = false, SaveConfig = true, ConfigFolder = "NexusConfig"})
+local ESPTab = Window:MakeTab({Name = "ESP Tracker", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+ESPTab:AddButton({
+    Name = "Highlight Spawned Fruits",
+    Callback = function()
+        for _, v in pairs(game.Workspace:GetChildren()) do
+            if v:IsA("Tool") or string.find(v.Name:lower(), "fruit") then
+                local Highlight = Instance.new("Highlight")
+                Highlight.Parent = v
+                Highlight.FillColor = Color3.fromRGB(255, 0, 0)
+            end
+        end
+    end
+})
+
+OrionLib:Init()`
           }
         ]
       },
@@ -168,13 +224,42 @@ async function seed() {
             title: 'Zone Auto Hatch & Shiny Boost',
             category: 'Farming',
             description: 'Auto-opens highest zone eggs with maximum speed and auto-deletes common pets.',
-            code: `-- Pet Sim 99 Auto Hatch\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal EggService = ReplicatedStorage.Network.Eggs_RequestPurchase\nprint("[NEXUS] Auto-Hatching Activated for Zone 99")`
+            code: `-- Roblox Script Nexus - Pet Sim 99 Auto Hatch
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Pet Sim 99 Auto Hatch Loaded!",
+        Duration = 5
+    })
+end)
+
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local Window = OrionLib:MakeWindow({Name = "Pet Sim 99 - Script Nexus", HidePremium = false, SaveConfig = true, ConfigFolder = "NexusConfig"})
+local HatchTab = Window:MakeTab({Name = "Auto Hatch", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+HatchTab:AddToggle({
+    Name = "Auto Open Best Zone Egg",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoHatch = Value
+    end    
+})
+
+OrionLib:Init()`
           },
           {
             title: 'Infinite Coin & Gem Collector',
             category: 'Utility',
             description: 'Teleports all dropped breakable coins directly to your avatar.',
-            code: `-- PS99 Magnet Loot Script\ngetgenv().MagnetRange = 5000\nprint("[NEXUS] Global loot magnet active!")`
+            code: `-- Roblox Script Nexus - Coin Magnet
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Coin & Gem Magnet Active!",
+        Duration = 5
+    })
+end)
+print("[NEXUS] Pet Sim 99 Magnet Activated")`
           }
         ]
       },
@@ -187,13 +272,50 @@ async function seed() {
             title: 'Aimbot & Wallhack Visuals',
             category: 'Combat',
             description: 'Smooth FOV aimbot with hitpart selection (Head, Torso) and chams color customizer.',
-            code: `-- Arsenal Nexus Combat Suite\nlocal Aimbot = {}\nAimbot.FOV = 120\nAimbot.Smoothness = 0.2\nprint("[NEXUS] Arsenal Silent Aimbot initialized!")`
+            code: `-- Roblox Script Nexus - Arsenal Aimbot & ESP
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Arsenal Aimbot & Visuals Active!",
+        Duration = 5
+    })
+end)
+
+local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local Window = OrionLib:MakeWindow({Name = "Arsenal - Script Nexus", HidePremium = false, SaveConfig = true, ConfigFolder = "NexusConfig"})
+local CombatTab = Window:MakeTab({Name = "Combat", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+CombatTab:AddToggle({
+    Name = "Enable Silent Aimbot",
+    Default = false,
+    Callback = function(Value)
+        _G.Aimbot = Value
+    end
+})
+
+CombatTab:AddToggle({
+    Name = "Player Wallhack ESP",
+    Default = false,
+    Callback = function(Value)
+        _G.ESP = Value
+    end
+})
+
+OrionLib:Init()`
           },
           {
             title: 'No Recoil & Rapid Fire',
             category: 'Combat',
             description: 'Eliminates weapon recoil and increases fire rate on all assault rifles and pistols.',
-            code: `-- Arsenal Fire Rate Modifier\nlocal CurrentWeapon = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Tool")\nif CurrentWeapon then\n    print("[NEXUS] Modified weapon stats for " .. CurrentWeapon.Name)\nend`
+            code: `-- Roblox Script Nexus - Weapon Mods
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Arsenal No Recoil Active!",
+        Duration = 5
+    })
+end)
+print("[NEXUS] Arsenal Weapon Modifier Activated")`
           }
         ]
       },
@@ -206,7 +328,15 @@ async function seed() {
             title: 'Vehicle Speed & Fly Mod',
             category: 'Movement',
             description: 'Unlock super speed for all cars, enable vehicle flight and zero collision mode.',
-            code: `-- Brookhaven Vehicle Fly Script\nlocal Player = game.Players.LocalPlayer\nprint("[NEXUS] Vehicle fly loaded. Press 'F' to toggle.")`
+            code: `-- Roblox Script Nexus - Brookhaven Vehicle Fly
+pcall(function()
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Roblox Script Nexus",
+        Text = "Brookhaven Vehicle Fly Active! Press F in car.",
+        Duration = 5
+    })
+end)
+print("[NEXUS] Brookhaven Vehicle Fly Loaded")`
           }
         ]
       }

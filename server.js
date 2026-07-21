@@ -257,18 +257,18 @@ app.get('/api/search', async (req, res) => {
   try {
     const searchTerm = `%${query}%`;
     const [results] = await pool.execute(`
-      SELECT m.id, m.name, m.image, m.description, COUNT(s.id) AS script_count
+      SELECT m.id, m.name, m.image, m.description,
+             (SELECT COUNT(*) FROM scripts s WHERE s.map_id = m.id) AS script_count
       FROM maps m
-      LEFT JOIN scripts s ON m.id = s.map_id
       WHERE m.name LIKE ? OR m.description LIKE ?
-      GROUP BY m.id
+      ORDER BY m.name ASC
       LIMIT 8
     `, [searchTerm, searchTerm]);
 
     res.json(results);
   } catch (err) {
     console.error('API search error:', err);
-    res.status(500).json({ error: 'Search query error' });
+    res.status(500).json([]);
   }
 });
 
@@ -296,23 +296,26 @@ app.post('/api/scripts/:id/copy-log', async (req, res) => {
 // Roblox Executor Direct Loadstring API Endpoint (Returns raw Lua code to executors)
 app.get('/api/scripts/:id/load', async (req, res) => {
   const scriptId = parseInt(req.params.id, 10);
+
+  // CORS + Cache headers for Roblox executor compatibility
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+
   if (isNaN(scriptId)) {
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     return res.status(400).send('-- Roblox Script Nexus: Invalid Script ID');
   }
 
   try {
     const [scripts] = await pool.execute('SELECT code FROM scripts WHERE id = ?', [scriptId]);
     if (scripts.length === 0) {
-      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
       return res.status(404).send('-- Roblox Script Nexus: Script not found');
     }
 
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.send(scripts[0].code);
   } catch (err) {
     console.error('Executor raw script load error:', err);
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.status(500).send('-- Roblox Script Nexus: Server Error loading script payload');
   }
 });
@@ -643,9 +646,18 @@ app.use((err, req, res, next) => {
     });
   }
 
-  res.render('admin/login', {
-    error: 'Server Error: ' + (err.message || 'Unknown error')
-  });
+  // Route admin errors to admin login, everything else to index
+  if (req.path.startsWith('/admin')) {
+    res.render('admin/login', {
+      error: 'Server Error: ' + (err.message || 'Unknown error')
+    });
+  } else {
+    res.render('index', {
+      maps: [],
+      featuredMaps: [],
+      error: 'An unexpected error occurred. Please try again.'
+    });
+  }
 });
 
 // Start Express Application Server

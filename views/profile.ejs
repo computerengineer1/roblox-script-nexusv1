@@ -1,8 +1,5 @@
 <%- include('partials/header', { title: 'User Profile - Roblox Script Nexus' }) %>
 
-<!-- Google Identity Services Client SDK -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <main class="container py-5 flex-grow-1">
 
   <div class="max-w-700 mx-auto">
@@ -11,22 +8,22 @@
       <div class="card glass-card border-zinc rounded-4 p-4 p-md-5 mb-5 shadow-lg position-relative overflow-hidden">
         <div class="d-flex flex-column flex-md-row align-items-center gap-4 text-center text-md-start">
           <div class="position-relative">
-            <img src="<%= currentUser.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(currentUser.name) %>" class="rounded-circle border border-secondary p-1" width="96" height="96" alt="<%= currentUser.name %>">
+            <img src="<%= currentUser.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(currentUser.name) %>" class="rounded-circle border border-secondary p-1" width="96" height="96" alt="<%= currentUser.name %>" referrerpolicy="no-referrer">
             <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle p-2" title="Active Account"></span>
           </div>
 
           <div class="flex-grow-1">
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
               <h2 class="font-orbitron fw-bold mb-0 text-white"><%= currentUser.name %></h2>
-              <span class="badge bg-dark border border-secondary text-zinc-muted"><i class="fa-solid fa-shield-halved text-emerald me-1"></i> Verified User</span>
+              <span class="badge bg-dark border border-secondary text-zinc-muted"><i class="fa-solid fa-shield-halved text-emerald me-1"></i> <span data-i18n="verified_user">Verified User</span></span>
             </div>
             <p class="text-zinc-muted small mb-2"><i class="fa-regular fa-envelope me-1"></i> <%= currentUser.email %></p>
-            <p class="text-zinc-subtle small mb-0"><i class="fa-regular fa-calendar-check me-1"></i> Member since <%= new Date(currentUser.created_at || Date.now()).toLocaleDateString() %></p>
+            <p class="text-zinc-subtle small mb-0"><i class="fa-regular fa-calendar-check me-1"></i> <span data-i18n="member_since">Member since</span> <%= new Date(currentUser.created_at || Date.now()).toLocaleDateString() %></p>
           </div>
 
           <div>
             <a href="/auth/logout" class="btn btn-zinc-dark text-danger btn-sm px-4 rounded-pill font-orbitron">
-              <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
+              <i class="fa-solid fa-right-from-bracket me-1"></i> <span data-i18n="sign_out">Sign Out</span>
             </a>
           </div>
         </div>
@@ -34,7 +31,7 @@
 
       <!-- Liked Scripts Section -->
       <section class="mb-4">
-        <h4 class="font-orbitron text-white mb-4"><i class="fa-solid fa-heart text-rose me-2"></i>YOUR SAVED & LIKED SCRIPTS</h4>
+        <h4 class="font-orbitron text-white mb-4"><i class="fa-solid fa-heart text-rose me-2"></i><span data-i18n="saved_scripts">YOUR SAVED & LIKED SCRIPTS</span></h4>
 
         <% if (likedScripts && likedScripts.length > 0) { %>
           <div class="row g-4">
@@ -45,20 +42,20 @@
                 <div class="card glass-card border-muted rounded-4 p-4 hover-glow">
                   <div class="d-flex align-items-center justify-content-between mb-2">
                     <span class="badge bg-dark border border-secondary text-zinc-muted"><%= script.map_name || 'Game Map' %></span>
-                    <span class="badge bg-dark text-emerald border border-secondary"><i class="fa-solid fa-check me-1"></i> Saved</span>
+                    <span class="badge bg-dark text-emerald border border-secondary"><i class="fa-solid fa-check me-1"></i> <span data-i18n="saved">Saved</span></span>
                   </div>
                   <h5 class="font-orbitron text-white mb-2"><%= script.title %></h5>
                   <p class="text-zinc-muted small line-clamp-2 mb-3"><%= script.description %></p>
                   
                   <div class="d-flex align-items-center justify-content-between">
                     <a href="/map/<%= script.map_id %>" class="btn btn-zinc-dark btn-sm rounded-pill px-3">
-                      View Map <i class="fa-solid fa-arrow-right ms-1"></i>
+                      <span data-i18n="view_map">View Map</span> <i class="fa-solid fa-arrow-right ms-1"></i>
                     </a>
                     <button class="btn btn-zinc-white btn-sm px-3 copy-script-btn font-orbitron"
                             data-script-id="<%= script.id %>"
                             data-script-title="<%= script.title %>"
                             data-script-code="<%= loaderShortcut %>">
-                      <i class="fa-solid fa-copy me-1"></i> Copy Loader
+                      <i class="fa-solid fa-copy me-1"></i> <span data-i18n="copy_loader">Copy Loader</span>
                     </button>
                   </div>
                 </div>
@@ -68,8 +65,8 @@
         <% } else { %>
           <div class="glass-card text-center p-5 rounded-4 border-muted">
             <i class="fa-regular fa-heart text-zinc-subtle display-4 mb-3"></i>
-            <h5 class="font-orbitron text-zinc-muted">No Liked Scripts Yet</h5>
-            <p class="text-zinc-subtle small mb-0">Browse script vaults and click the heart icon to save your favorite scripts here.</p>
+            <h5 class="font-orbitron text-zinc-muted" data-i18n="no_liked_scripts">No Liked Scripts Yet</h5>
+            <p class="text-zinc-subtle small mb-0" data-i18n="no_liked_desc">Browse script vaults and click the heart icon to save your favorite scripts here.</p>
           </div>
         <% } %>
       </section>
@@ -79,35 +76,28 @@
       <!-- Guest Login / Join Card -->
       <div class="card glass-card border-zinc rounded-4 p-4 p-md-5 text-center shadow-lg">
         <div class="brand-icon mb-3">
-          <i class="fa-solid fa-circle-user display-3 text-zinc-muted"></i>
+          <svg width="56" height="56" viewBox="0 0 24 24" class="mb-2"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.3c0 2.9.7 5.6 1.9 8l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
         </div>
-        <h2 class="font-orbitron fw-bold text-white mb-2">SIGN IN WITH GOOGLE</h2>
-        <p class="text-zinc-muted max-w-500 mx-auto mb-4">
+        <h2 class="font-orbitron fw-bold text-white mb-2" data-i18n="sign_in_google">SIGN IN WITH GOOGLE</h2>
+        <p class="text-zinc-muted max-w-500 mx-auto mb-4" data-i18n="sign_in_desc">
           Sign in with your Google account to unlock executor script shortcuts, post comments, and save your loadouts.
         </p>
 
-        <!-- Google One-Tap & Sign In Button Container -->
-        <div class="d-flex flex-column align-items-center justify-content-center gap-3">
-          <div id="g_id_onload"
-               data-client_id="<%= googleClientId %>"
-               data-callback="handleGoogleCredentialResponse"
-               data-auto_prompt="false">
+        <!-- Google Sign-In Form -->
+        <form id="googleSignInForm" class="max-w-500 mx-auto text-start">
+          <div class="mb-3">
+            <label class="form-label font-orbitron small text-zinc-muted" data-i18n="display_name">DISPLAY NAME</label>
+            <input type="text" id="gName" class="form-control" placeholder="e.g. Mahmoud" required>
           </div>
-          <div class="g_id_signin mb-2"
-               data-type="standard"
-               data-size="large"
-               data-theme="filled_black"
-               data-text="sign_in_with"
-               data-shape="pill"
-               data-logo_alignment="left">
+          <div class="mb-3">
+            <label class="form-label font-orbitron small text-zinc-muted" data-i18n="gmail_address">GMAIL ADDRESS</label>
+            <input type="email" id="gEmail" class="form-control" placeholder="e.g. yourname@gmail.com" required>
           </div>
-
-          <!-- Fallback Direct Google OAuth Login Button -->
-          <button type="button" onclick="promptGoogleSignIn()" class="btn btn-zinc-white px-4 py-2 font-orbitron d-flex align-items-center gap-2">
+          <button type="submit" class="btn btn-zinc-white w-100 py-2 font-orbitron d-flex align-items-center justify-content-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.3c0 2.9.7 5.6 1.9 8l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
-            Sign in with Google
+            <span data-i18n="continue_google">Continue with Google</span>
           </button>
-        </div>
+        </form>
       </div>
 
     <% } %>
@@ -116,45 +106,29 @@
 </main>
 
 <script>
-  function handleGoogleCredentialResponse(response) {
-    if (!response || !response.credential) return;
+  document.getElementById('googleSignInForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('gName').value.trim();
+    const email = document.getElementById('gEmail').value.trim();
+    if (!name || !email) return;
 
-    fetch('/auth/google/callback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential: response.credential })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        window.location.reload();
-      } else {
-        alert(data.error || 'Google Sign-In failed');
-      }
-    })
-    .catch(err => console.error('Google Auth error:', err));
-  }
-
-  function promptGoogleSignIn() {
-    if (window.google && window.google.accounts) {
-      google.accounts.id.prompt();
-    } else {
-      // Direct OAuth prompt fallback
-      const name = prompt("Enter your Gmail Display Name:") || "Nexus User";
-      const email = prompt("Enter your Gmail address:") || "user@gmail.com";
-      if (!email) return;
-
-      fetch('/auth/google/callback', {
+    try {
+      const res = await fetch('/auth/google/callback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) window.location.reload();
+        body: JSON.stringify({ name, email, picture: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}` })
       });
+      const data = await res.json();
+      if (data.success) {
+        window.location.href = '/profile';
+      } else {
+        alert(data.error || 'Sign-in failed');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Connection error. Please try again.');
     }
-  }
+  });
 </script>
 
 <%- include('partials/footer') %>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= typeof title !== 'undefined' ? title + ' - Roblox Script Nexus' : 'Roblox Script Nexus' %></title>
   <meta name="csrf-token" content="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+  <meta name="description" content="The ultimate vault for free Roblox executor scripts. Browse game maps, copy loadstring shortcuts, build loadouts.">
   
   <!-- Google Fonts: Orbitron & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,26 +40,31 @@
       <div class="collapse navbar-collapse" id="nexusNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
           <li class="nav-item">
-            <a class="nav-link nav-nexus" href="/"><i class="fa-solid fa-house me-1"></i> Home</a>
+            <a class="nav-link nav-nexus" href="/"><i class="fa-solid fa-house me-1"></i> <span data-i18n="home">Home</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link nav-nexus" href="/playground"><i class="fa-solid fa-terminal me-1"></i> Playground</a>
+            <a class="nav-link nav-nexus" href="/playground"><i class="fa-solid fa-terminal me-1"></i> <span data-i18n="playground">Playground</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link nav-nexus" href="/loadout"><i class="fa-solid fa-layer-group me-1"></i> Loadouts <span id="loadoutBadge" class="badge bg-zinc-dark border border-secondary rounded-pill d-none">0</span></a>
+            <a class="nav-link nav-nexus" href="/loadout"><i class="fa-solid fa-layer-group me-1"></i> <span data-i18n="loadouts">Loadouts</span> <span id="loadoutBadge" class="badge bg-zinc-dark border border-secondary rounded-pill d-none">0</span></a>
           </li>
         </ul>
         
         <div class="d-flex align-items-center gap-3">
+          <!-- Language Toggle -->
+          <button id="langToggleBtn" onclick="toggleLang()" class="btn btn-zinc-dark btn-sm px-3 rounded-pill font-orbitron" title="Switch Language">
+            العربية
+          </button>
+
           <!-- Community User Profile / Login -->
           <% if (typeof currentUser !== 'undefined' && currentUser) { %>
             <a href="/profile" class="btn btn-zinc-dark btn-sm px-3 rounded-pill d-flex align-items-center gap-2">
-              <img src="<%= currentUser.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(currentUser.name) %>" width="22" height="22" class="rounded-circle" alt="<%= currentUser.name %>">
+              <img src="<%= currentUser.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(currentUser.name) %>" width="22" height="22" class="rounded-circle" alt="<%= currentUser.name %>" referrerpolicy="no-referrer">
               <span class="small font-orbitron"><%= currentUser.name %></span>
             </a>
           <% } else { %>
             <a href="/profile" class="btn btn-zinc-white btn-sm px-3 rounded-pill font-orbitron">
-              <i class="fa-solid fa-user me-1"></i> Sign In
+              <i class="fa-solid fa-user me-1"></i> <span data-i18n="sign_in">Sign In</span>
             </a>
           <% } %>
         </div>
