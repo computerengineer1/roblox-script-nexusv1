@@ -28,11 +28,9 @@ const securityHeaders = helmet({
       imgSrc: [
         "'self'",
         "data:",
-        "https://lh3.googleusercontent.com",
-        "https://*.googleusercontent.com",
-        "https://api.dicebear.com",
-        "https://pagead2.googlesyndication.com",
-        "https://via.placeholder.com"
+        "blob:",
+        "https:",
+        "http:"
       ],
       connectSrc: [
         "'self'",
