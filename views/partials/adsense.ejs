@@ -1,0 +1,31 @@
+<% 
+  const adClient = typeof adClientId !== 'undefined' && adClientId ? adClientId : 'ca-pub-1234567890123456';
+  const adSlot = typeof adSlotId !== 'undefined' && adSlotId ? adSlotId : '1234567890';
+  const position = typeof pos !== 'undefined' ? pos : 'banner';
+%>
+
+<div class="adsense-container text-center my-4 p-3 glass-card rounded-3 border-purple">
+  <small class="text-uppercase text-secondary tracking-wide d-block mb-2 font-orbitron" style="font-size: 0.75rem;">
+    <i class="fa-solid fa-rectangle-ad text-cyan me-1"></i> ADVERTISEMENT
+  </small>
+  
+  <% if (process.env.NODE_ENV === 'production' && adClient && adClient !== 'ca-pub-1234567890123456') { %>
+    <!-- Google AdSense Live Code -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= adClient %>" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="<%= adClient %>"
+         data-ad-slot="<%= adSlot %>"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  <% } else { %>
+    <!-- AdSense Development Placeholder Unit -->
+    <div class="ad-placeholder p-4 bg-dark-gradient rounded border border-secondary border-dashed">
+      <p class="mb-1 text-cyan font-orbitron fw-bold"><i class="fa-solid fa-gem me-2"></i>FREE ROBLOX SCRIPTS SPONSOR</p>
+      <p class="text-secondary small mb-0">Google AdSense Unit (<%= position %>) — Client: <%= adClient %></p>
+    </div>
+  <% } %>
+</div>

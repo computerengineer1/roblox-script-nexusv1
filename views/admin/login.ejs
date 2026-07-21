@@ -1,0 +1,48 @@
+<%- include('../partials/header', { title: 'Admin Login - Roblox Script Nexus' }) %>
+
+<main class="container py-5 flex-grow-1 d-flex align-items-center justify-content-center">
+
+  <div class="card glass-card border-cyan rounded-4 p-4 p-md-5 w-100 max-w-500 shadow-cyan">
+    <div class="text-center mb-4">
+      <div class="brand-icon mb-3">
+        <i class="fa-solid fa-user-shield text-cyan display-3"></i>
+      </div>
+      <h2 class="font-orbitron text-neon-cyan mb-1">ADMINISTRATOR LOGIN</h2>
+      <p class="text-secondary small">Access control panel to manage maps, scripts, and view analytics.</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger border-0 bg-dark-glass text-danger rounded-3 mb-4 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <div><%= error %></div>
+      </div>
+    <% } %>
+
+    <form action="/admin/login" method="POST">
+      <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
+      <div class="mb-3">
+        <label for="username" class="form-label font-orbitron text-cyan small">USERNAME</label>
+        <div class="input-group">
+          <span class="input-group-text bg-dark-glass text-cyan border-cyan"><i class="fa-solid fa-user"></i></span>
+          <input type="text" id="username" name="username" class="form-control bg-dark-glass text-light border-cyan" placeholder="Enter admin username" required autocomplete="username">
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="password" class="form-label font-orbitron text-cyan small">PASSWORD</label>
+        <div class="input-group">
+          <span class="input-group-text bg-dark-glass text-cyan border-cyan"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" id="password" name="password" class="form-control bg-dark-glass text-light border-cyan" placeholder="Enter password" required autocomplete="current-password">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-cyan text-dark w-100 py-3 rounded-pill font-orbitron fw-bold shadow-cyan">
+        LOG IN TO NEXUS DASHBOARD <i class="fa-solid fa-right-to-bracket ms-2"></i>
+      </button>
+    </form>
+  </div>
+
+</main>
+
+<%- include('../partials/footer') %>

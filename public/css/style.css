@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Roblox Script Nexus Ultimate - Game UI Design System
+   ========================================================================== */
+
+:root {
+  --bg-dark-1: #0a0a1a;
+  --bg-dark-2: #1a1a3a;
+  --neon-cyan: #00f0ff;
+  --neon-purple: #b300ff;
+  --glass-bg: rgba(15, 15, 35, 0.65);
+  --glass-border-cyan: rgba(0, 240, 255, 0.35);
+  --glass-border-purple: rgba(179, 0, 255, 0.35);
+  --text-main: #f0f0ff;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--bg-dark-1) 0%, var(--bg-dark-2) 100%);
+  background-attachment: fixed;
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6, .font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* Neon Text Utilities */
+.text-neon-cyan {
+  color: var(--neon-cyan) !important;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.text-neon-purple {
+  color: var(--neon-purple) !important;
+  text-shadow: 0 0 12px rgba(179, 0, 255, 0.6);
+}
+
+.text-cyan { color: var(--neon-cyan) !important; }
+.text-purple { color: var(--neon-purple) !important; }
+
+/* Navbar */
+.nexus-navbar {
+  background: rgba(10, 10, 26, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border-cyan);
+}
+
+.brand-text {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+}
+
+.nav-nexus {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  color: #a0a0c0 !important;
+  transition: all 0.25s ease;
+}
+
+.nav-nexus:hover, .nav-nexus.active {
+  color: var(--neon-cyan) !important;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.border-cyan { border-color: var(--glass-border-cyan) !important; }
+.border-purple { border-color: var(--glass-border-purple) !important; }
+
+.shadow-cyan {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+}
+
+.shadow-purple {
+  box-shadow: 0 0 20px rgba(179, 0, 255, 0.25);
+}
+
+/* Background Glowing Spheres */
+.glow-sphere {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.glow-sphere.cyan {
+  top: -50px;
+  left: 10%;
+  background: rgba(0, 240, 255, 0.15);
+}
+
+.glow-sphere.purple {
+  top: 50px;
+  right: 10%;
+  background: rgba(179, 0, 255, 0.15);
+}
+
+/* Buttons */
+.btn-cyan {
+  background-color: var(--neon-cyan);
+  color: #0a0a1a;
+  border: none;
+  transition: all 0.25s ease;
+}
+
+.btn-cyan:hover {
+  background-color: #5cf4ff;
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.8);
+  color: #0a0a1a;
+}
+
+.btn-purple {
+  background-color: var(--neon-purple);
+  color: #ffffff;
+  border: none;
+  transition: all 0.25s ease;
+}
+
+.btn-purple:hover {
+  background-color: #c933ff;
+  box-shadow: 0 0 18px rgba(179, 0, 255, 0.8);
+  color: #ffffff;
+}
+
+.btn-outline-cyan {
+  border: 1px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+}
+
+.btn-outline-cyan:hover {
+  background-color: var(--neon-cyan);
+  color: #0a0a1a;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+}
+
+.btn-outline-purple {
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
+}
+
+.btn-outline-purple:hover {
+  background-color: var(--neon-purple);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(179, 0, 255, 0.5);
+}
+
+/* Form Controls */
+.bg-dark-glass {
+  background: rgba(10, 10, 26, 0.75) !important;
+}
+
+.form-control:focus, .form-select:focus {
+  background-color: rgba(10, 10, 26, 0.9) !important;
+  border-color: var(--neon-cyan) !important;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.4) !important;
+  color: #ffffff !important;
+}
+
+/* Search Dropdown */
+.search-dropdown-menu {
+  background: rgba(15, 15, 35, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--neon-cyan);
+  max-height: 350px;
+  overflow-y: auto;
+  z-index: 1050;
+}
+
+.search-item-hover:hover {
+  background: rgba(0, 240, 255, 0.15) !important;
+}
+
+/* Cards & Image Zoom */
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0, 240, 255, 0.3);
+  border-color: var(--neon-cyan) !important;
+}
+
+.map-img {
+  transition: transform 0.5s ease;
+}
+
+.map-card:hover .map-img {
+  transform: scale(1.08);
+}
+
+/* Code Mirror Theme Tweaks */
+.CodeMirror {
+  height: 350px !important;
+  border-radius: 0.5rem;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.9rem;
+}
+
+/* Utilities */
+.max-w-650 { max-width: 650px; }
+.max-w-700 { max-width: 700px; }
+.max-w-500 { max-width: 500px; }
+.min-h-250 { min-height: 250px; }
+.bg-purple { background-color: var(--neon-purple) !important; }
+.bg-dark-gradient { background: linear-gradient(180deg, #070712 0%, #0d0d22 100%); }

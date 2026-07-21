@@ -1,0 +1,55 @@
+<%- include('partials/header', { title: 'Smart Loadout Builder - Roblox Script Nexus' }) %>
+
+<main class="container py-4 flex-grow-1">
+
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="display-6 font-orbitron text-neon-cyan mb-1"><i class="fa-solid fa-layer-group me-2"></i>SMART LOADOUT BUILDER</h1>
+      <p class="text-secondary mb-0">Combine multiple Roblox scripts into one single master script with automated Lua section separators.</p>
+    </div>
+    <button id="clearLoadoutBtn" class="btn btn-outline-danger btn-sm font-orbitron rounded-pill px-3">
+      <i class="fa-solid fa-trash me-1"></i> Clear All
+    </button>
+  </div>
+
+  <div class="row g-4">
+    <!-- Saved Scripts List -->
+    <div class="col-lg-7">
+      <div id="loadoutContainer" class="d-flex flex-column gap-3">
+        <!-- JS dynamically populates items from localStorage -->
+      </div>
+
+      <div id="emptyLoadoutState" class="glass-card text-center p-5 rounded-4 border-purple d-none">
+        <i class="fa-solid fa-layer-group text-secondary fs-1 mb-3"></i>
+        <h4 class="font-orbitron text-secondary">Your Loadout is Empty</h4>
+        <p class="text-muted mb-4">Explore game maps and click "Add to Loadout" on any script to build your custom combo.</p>
+        <a href="/" class="btn btn-cyan text-dark font-orbitron fw-bold px-4 rounded-pill">Explore Maps</a>
+      </div>
+    </div>
+
+    <!-- Merge Preview & Copy Box -->
+    <div class="col-lg-5">
+      <!-- AdSense Spot #3: Before Merge Button -->
+      <%- include('partials/adsense', { pos: 'Loadout Sidebar' }) %>
+
+      <div class="card glass-card border-cyan rounded-4">
+        <div class="card-header bg-transparent border-cyan py-3">
+          <h5 class="font-orbitron text-neon-cyan mb-0"><i class="fa-solid fa-file-code me-2"></i>MASTER MERGED LUA</h5>
+        </div>
+
+        <div class="card-body p-3">
+          <p class="text-secondary small mb-3">Your combined Lua master script with automatic header comments:</p>
+
+          <pre id="mergedPreviewCode" class="bg-dark-gradient p-3 rounded-3 text-light border border-secondary font-monospace overflow-x-auto fs-6 mb-3" style="max-height: 250px;">-- Select scripts to see merged output preview --</pre>
+
+          <button id="copyMergedBtn" class="btn btn-cyan text-dark w-100 py-3 rounded-pill font-orbitron fw-bold fs-5 shadow-cyan" disabled>
+            <i class="fa-solid fa-copy me-2"></i> MERGE & COPY MASTER SCRIPT
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<%- include('partials/footer') %>
