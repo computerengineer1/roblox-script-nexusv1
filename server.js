@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const { doubleCsrf } = require('csrf-csrf');
+
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
@@ -41,28 +41,9 @@ app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// 5. CSRF Protection Setup (Double-Submit Cookie Pattern)
-const { generateToken, doubleCsrfProtection } = doubleCsrf({
-  getSecret: () => COOKIE_SECRET,
-  cookieName: '__csrf',
-  cookieOptions: {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    path: '/'
-  },
-  getTokenFromRequest: (req) => {
-    return req.headers['x-csrf-token'] || req.body._csrf;
-  }
-});
-
-// Middleware to inject CSRF token & AdSense environment keys into all views
+// Middleware to inject view locals
 app.use((req, res, next) => {
-  try {
-    res.locals.csrfToken = generateToken(req, res);
-  } catch (err) {
-    res.locals.csrfToken = '';
-  }
+  res.locals.csrfToken = '';
   res.locals.adClientId = process.env.AD_CLIENT_ID || 'ca-pub-1234567890123456';
   res.locals.adSlotId = process.env.AD_SLOT_ID || '1234567890';
   res.locals.reqHeadersHost = req.headers.host || 'localhost:3000';
@@ -471,17 +452,16 @@ app.use((req, res) => {
 // Production Error Handler (Hides stack traces)
 app.use((err, req, res, next) => {
   console.error('Unhandled Application Error:', err);
-  const isProd = process.env.NODE_ENV === 'production';
   
   res.status(err.status || 500);
   if (req.xhr || req.headers.accept?.includes('json')) {
     return res.json({
-      error: isProd ? 'Internal Server Error' : err.message
+      error: err.message || 'Internal Server Error'
     });
   }
 
   res.render('admin/login', {
-    error: isProd ? 'An unexpected server error occurred.' : err.message
+    error: 'Server Error: ' + (err.message || 'Unknown error')
   });
 });
 
