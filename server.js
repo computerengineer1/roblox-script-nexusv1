@@ -442,8 +442,8 @@ app.get('/admin/dashboard', requireAuth, async (req, res, next) => {
   try {
     const [[{ mapCount }]] = await pool.execute('SELECT COUNT(*) AS mapCount FROM maps');
     const [[{ scriptCount }]] = await pool.execute('SELECT COUNT(*) AS scriptCount FROM scripts');
-    const [[{ copyCount }]] = await pool.execute('SELECT COUNT(*) AS copyCount FROM analytics WHERE event_type = "copy"');
-    const [[{ viewCount }]] = await pool.execute('SELECT COUNT(*) AS viewCount FROM analytics WHERE event_type = "view"');
+    const [[{ copyCount }]] = await pool.execute("SELECT COUNT(*) AS copyCount FROM analytics WHERE event_type = 'copy'");
+    const [[{ viewCount }]] = await pool.execute("SELECT COUNT(*) AS viewCount FROM analytics WHERE event_type = 'view'");
 
     const [maps] = await pool.execute('SELECT * FROM maps ORDER BY created_at DESC');
     const [scripts] = await pool.execute(`
