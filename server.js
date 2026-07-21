@@ -58,8 +58,11 @@ app.use((req, res, next) => {
   res.locals.csrfToken = generateToken(req, res);
   res.locals.adClientId = process.env.AD_CLIENT_ID || 'ca-pub-1234567890123456';
   res.locals.adSlotId = process.env.AD_SLOT_ID || '1234567890';
+  res.locals.reqHeadersHost = req.headers.host || 'localhost:3000';
+  res.locals.protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   next();
 });
+
 
 // ==========================================================================
 // PUBLIC ROUTES
@@ -200,6 +203,31 @@ app.post('/api/scripts/:id/copy-log', doubleCsrfProtection, async (req, res) => 
     res.status(500).json({ error: 'Failed to record analytics' });
   }
 });
+
+// Roblox Executor Direct Loadstring API Endpoint (Returns raw Lua code to executors)
+app.get('/api/scripts/:id/load', async (req, res) => {
+  const scriptId = parseInt(req.params.id, 10);
+  if (isNaN(scriptId)) {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    return res.status(400).send('-- Roblox Script Nexus: Invalid Script ID');
+  }
+
+  try {
+    const [scripts] = await pool.execute('SELECT code FROM scripts WHERE id = ?', [scriptId]);
+    if (scripts.length === 0) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      return res.status(404).send('-- Roblox Script Nexus: Script not found');
+    }
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(scripts[0].code);
+  } catch (err) {
+    console.error('Executor raw script load error:', err);
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.status(500).send('-- Roblox Script Nexus: Server Error loading script payload');
+  }
+});
+
 
 // ==========================================================================
 // ADMIN PORTAL ROUTES
