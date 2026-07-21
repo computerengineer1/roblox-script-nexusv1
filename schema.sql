@@ -5,10 +5,23 @@ USE roblox_scripts;
 -- Drop existing tables to allow clean setup
 DROP TABLE IF EXISTS login_attempts;
 DROP TABLE IF EXISTS subscriptions;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS likes;
 DROP TABLE IF EXISTS analytics;
 DROP TABLE IF EXISTS scripts;
 DROP TABLE IF EXISTS maps;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS admin_users;
+
+-- Users table (Google & Local Community)
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    google_id VARCHAR(255) NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL,
+    avatar VARCHAR(500) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Maps table
 CREATE TABLE maps (
@@ -31,6 +44,28 @@ CREATE TABLE scripts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_scripts_map FOREIGN KEY (map_id) REFERENCES maps(id) ON DELETE CASCADE,
     FULLTEXT INDEX ft_scripts_search (title, description)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Script Likes Table
+CREATE TABLE likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    script_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_likes_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_likes_script FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_script_like (user_id, script_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Script Comments Table
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    script_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_comments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_comments_script FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Admin Users table

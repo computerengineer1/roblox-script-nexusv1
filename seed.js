@@ -9,6 +9,17 @@ async function seed() {
   try {
     // 0. Ensure tables exist
     await pool.execute(`
+      CREATE TABLE IF NOT EXISTS users (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          google_id VARCHAR(255) NULL UNIQUE,
+          email VARCHAR(255) NOT NULL UNIQUE,
+          name VARCHAR(255) NOT NULL,
+          avatar VARCHAR(500) NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    await pool.execute(`
       CREATE TABLE IF NOT EXISTS maps (
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
@@ -30,6 +41,30 @@ async function seed() {
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           CONSTRAINT fk_scripts_map FOREIGN KEY (map_id) REFERENCES maps(id) ON DELETE CASCADE,
           FULLTEXT INDEX ft_scripts_search (title, description)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS likes (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
+          script_id INT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT fk_likes_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          CONSTRAINT fk_likes_script FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE,
+          UNIQUE KEY unique_user_script_like (user_id, script_id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS comments (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          user_id INT NOT NULL,
+          script_id INT NOT NULL,
+          content TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          CONSTRAINT fk_comments_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+          CONSTRAINT fk_comments_script FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
@@ -87,10 +122,20 @@ async function seed() {
     );
     console.log(`✅ Default admin created (username: ${adminUsername}, password: ${adminPassword})`);
 
+    // Seed Demo User
+    const [demoUsers] = await pool.execute('SELECT * FROM users WHERE email = ?', ['demo@robloxnexus.com']);
+    if (demoUsers.length === 0) {
+      await pool.execute(
+        'INSERT INTO users (name, email, avatar) VALUES (?, ?, ?)',
+        ['Nexus Gamer', 'demo@robloxnexus.com', 'https://api.dicebear.com/7.x/bottts/svg?seed=NexusGamer']
+      );
+      console.log('✅ Demo community user created');
+    }
+
     // Ensure uploads directory exists
     const uploadsDir = path.join(__dirname, 'public/uploads/maps');
     if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+      try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch (e) {}
     }
 
     const mapsData = [

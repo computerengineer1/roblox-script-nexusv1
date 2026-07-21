@@ -3,29 +3,29 @@
 <main class="container py-4 flex-grow-1">
 
   <!-- Map Header Hero Section -->
-  <section class="map-hero glass-card border-cyan rounded-4 p-4 p-md-5 mb-4 position-relative overflow-hidden">
+  <section class="map-hero glass-card border-zinc rounded-4 p-4 p-md-5 mb-4 position-relative overflow-hidden">
     <div class="row align-items-center">
       <div class="col-lg-5 mb-4 mb-lg-0">
-        <div class="rounded-4 overflow-hidden shadow-cyan border-purple" style="max-height: 300px;">
-          <img src="<%= map.image || 'https://via.placeholder.com/800x400/0a0a1a/00f0ff?text=' + encodeURIComponent(map.name) %>" class="w-100 h-100 object-fit-cover" alt="<%= map.name %>">
+        <div class="rounded-4 overflow-hidden shadow-lg border border-secondary" style="max-height: 280px;">
+          <img src="<%= map.image || 'https://via.placeholder.com/800x400/09090b/27272a?text=' + encodeURIComponent(map.name) %>" class="w-100 h-100 object-fit-cover" alt="<%= map.name %>">
         </div>
       </div>
       <div class="col-lg-7">
         <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="badge bg-purple px-3 py-2 font-orbitron"><i class="fa-solid fa-gamepad me-1"></i> MAP VAULT</span>
+          <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron px-3 py-2"><i class="fa-solid fa-cube me-1 text-emerald"></i> MAP VAULT</span>
           <% if (isWatching) { %>
-            <span class="badge bg-success text-white px-3 py-2 font-orbitron"><i class="fa-solid fa-eye me-1"></i> WATCHING</span>
+            <span class="badge bg-dark text-emerald border border-secondary px-3 py-2 font-orbitron"><i class="fa-solid fa-eye me-1"></i> WATCHING</span>
           <% } %>
         </div>
         
-        <h1 class="display-5 font-orbitron text-neon-cyan fw-bold mb-3"><%= map.name %></h1>
-        <p class="text-secondary lead mb-4"><%= map.description %></p>
+        <h1 class="display-5 font-orbitron text-white fw-bold mb-3"><%= map.name %></h1>
+        <p class="text-zinc-muted lead mb-4"><%= map.description %></p>
         
         <div class="d-flex flex-wrap align-items-center gap-3">
-          <a href="/subscribe/<%= map.id %>" class="btn <%= isWatching ? 'btn-outline-success' : 'btn-outline-purple' %> rounded-pill px-4 font-orbitron">
+          <a href="/subscribe/<%= map.id %>" class="btn <%= isWatching ? 'btn-zinc-dark text-emerald' : 'btn-outline-zinc' %> rounded-pill px-4 font-orbitron">
             <i class="fa-solid <%= isWatching ? 'fa-check' : 'fa-bell' %> me-2"></i> <%= isWatching ? 'Watching Map' : 'Watch Map (Cookie Alert)' %>
           </a>
-          <a href="#scriptsList" class="btn btn-cyan text-dark rounded-pill px-4 font-orbitron fw-bold">
+          <a href="#scriptsList" class="btn btn-zinc-white rounded-pill px-4 font-orbitron">
             <i class="fa-solid fa-code me-2"></i> Browse <%= scripts.length %> Scripts
           </a>
         </div>
@@ -37,17 +37,17 @@
   <div class="row g-4 mb-4">
     <!-- Live Preview Sandbox Component -->
     <div class="col-lg-8">
-      <div class="card glass-card border-purple rounded-4 h-100">
-        <div class="card-header bg-transparent border-purple d-flex align-items-center justify-content-between py-3">
-          <h5 class="font-orbitron text-neon-cyan mb-0"><i class="fa-solid fa-play-circle me-2"></i>LIVE SCRIPT PREVIEW SIMULATOR</h5>
-          <span class="badge bg-dark-glass text-secondary">Canvas Demo</span>
+      <div class="card glass-card border-zinc rounded-4 h-100">
+        <div class="card-header bg-transparent border-zinc d-flex align-items-center justify-content-between py-3">
+          <h5 class="font-orbitron text-white mb-0"><i class="fa-solid fa-play-circle me-2 text-emerald"></i>LIVE SCRIPT PREVIEW SIMULATOR</h5>
+          <span class="badge bg-dark text-zinc-muted border border-secondary">Canvas Demo</span>
         </div>
         <div class="card-body p-4 text-center d-flex flex-column align-items-center justify-content-center min-h-250 position-relative">
           <canvas id="previewCanvas" width="600" height="220" class="w-100 rounded-3 border border-secondary bg-dark-gradient mb-3"></canvas>
           <div class="preview-controls d-flex gap-2">
-            <button class="btn btn-sm btn-outline-cyan font-orbitron" onclick="runSimulatedPreview('ESP')"><i class="fa-solid fa-eye me-1"></i> Test ESP</button>
-            <button class="btn btn-sm btn-outline-purple font-orbitron" onclick="runSimulatedPreview('Aimbot')"><i class="fa-solid fa-crosshair me-1"></i> Test Aimbot</button>
-            <button class="btn btn-sm btn-outline-light font-orbitron" onclick="runSimulatedPreview('Farm')"><i class="fa-solid fa-rotate me-1"></i> Test AutoFarm</button>
+            <button class="btn btn-sm btn-outline-zinc font-orbitron" onclick="runSimulatedPreview('ESP')"><i class="fa-solid fa-eye me-1"></i> Test ESP</button>
+            <button class="btn btn-sm btn-outline-zinc font-orbitron" onclick="runSimulatedPreview('Aimbot')"><i class="fa-solid fa-crosshair me-1"></i> Test Aimbot</button>
+            <button class="btn btn-sm btn-outline-zinc font-orbitron" onclick="runSimulatedPreview('Farm')"><i class="fa-solid fa-rotate me-1"></i> Test AutoFarm</button>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@
 
   <!-- Scripts List Section -->
   <section id="scriptsList" class="py-3">
-    <h3 class="font-orbitron text-neon-cyan mb-4"><i class="fa-solid fa-scroll me-2"></i>AVAILABLE SCRIPTS</h3>
+    <h3 class="font-orbitron text-white mb-4"><i class="fa-solid fa-scroll me-2 text-zinc-muted"></i>AVAILABLE SCRIPTS</h3>
 
     <% if (scripts && scripts.length > 0) { %>
       <div class="row g-4">
@@ -69,51 +69,85 @@
              const loaderShortcut = `loadstring(game:HttpGet("${protocol}://${reqHeadersHost}/api/scripts/${script.id}/load"))()`;
         %>
           <div class="col-12">
-            <div class="card glass-card border-purple rounded-4 overflow-hidden shadow-sm hover-glow">
-              <div class="card-header bg-transparent border-purple d-flex flex-wrap align-items-center justify-content-between gap-2 p-3 p-md-4">
+            <div class="card glass-card border-zinc rounded-4 overflow-hidden shadow-lg hover-glow">
+              <div class="card-header bg-transparent border-zinc d-flex flex-wrap align-items-center justify-content-between gap-2 p-3 p-md-4">
                 <div>
-                  <span class="badge bg-purple text-light px-3 py-1 font-orbitron mb-2 me-2"><%= script.category %></span>
-                  <span class="badge bg-dark-glass text-cyan border-cyan px-2 py-1 font-orbitron mb-2"><i class="fa-solid fa-lock me-1"></i> HIDDEN SOURCE</span>
-                  <h4 class="font-orbitron text-neon-cyan mb-0"><%= script.title %></h4>
+                  <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron mb-2 me-2"><%= script.category %></span>
+                  <span class="badge bg-dark text-emerald border border-secondary font-orbitron mb-2"><i class="fa-solid fa-lock me-1"></i> EXECUTOR LOADSTRING</span>
+                  <h4 class="font-orbitron text-white mb-0"><%= script.title %></h4>
                 </div>
                 
                 <div class="d-flex align-items-center gap-2">
-                  <button class="btn btn-outline-purple btn-sm rounded-pill font-orbitron px-3" 
+                  <!-- Like Button -->
+                  <button class="btn btn-zinc-dark btn-sm rounded-pill px-3 like-script-btn" data-script-id="<%= script.id %>">
+                    <i class="fa-solid fa-heart me-1 text-rose like-btn-heart"></i> <span class="like-count"><%= script.like_count || 0 %></span>
+                  </button>
+
+                  <button class="btn btn-outline-zinc btn-sm rounded-pill font-orbitron px-3" 
                           onclick="addToLoadout('<%= script.id %>', '<%= script.title.replace(/'/g, "\\'") %>', `<%= loaderShortcut %>`)">
                     <i class="fa-solid fa-plus me-1"></i> Add to Loadout
                   </button>
                   
-                  <button class="btn btn-cyan btn-sm text-dark font-orbitron fw-bold rounded-pill px-4 copy-script-btn"
+                  <button class="btn btn-zinc-white btn-sm px-4 copy-script-btn font-orbitron"
                           data-script-id="<%= script.id %>"
                           data-script-title="<%= script.title %>"
                           data-script-code="<%= loaderShortcut %>">
-                    <i class="fa-solid fa-copy me-1"></i> Copy Executor Shortcut
+                    <i class="fa-solid fa-copy me-1"></i> Copy Loader
                   </button>
                 </div>
               </div>
 
-              <div class="card-body p-3 p-md-4 border-top border-purple">
-                <p class="text-secondary small mb-3"><%= script.description %></p>
+              <div class="card-body p-3 p-md-4 border-top border-zinc">
+                <p class="text-zinc-muted small mb-3"><%= script.description %></p>
 
                 <!-- Protected Loadstring Code Box -->
-                <div class="position-relative">
+                <div class="position-relative mb-4">
                   <div class="d-flex align-items-center justify-content-between mb-2">
-                    <small class="text-uppercase text-cyan font-orbitron" style="font-size: 0.75rem;"><i class="fa-solid fa-bolt me-1"></i> Executor Loadstring Shortcut</small>
-                    <small class="text-muted"><i class="fa-solid fa-shield-halved me-1 text-success"></i> Source Protected</small>
+                    <small class="text-uppercase text-zinc-light font-orbitron" style="font-size: 0.75rem;"><i class="fa-solid fa-bolt me-1 text-emerald"></i> Executor Loadstring Shortcut</small>
+                    <small class="text-zinc-subtle"><i class="fa-solid fa-shield-halved me-1 text-emerald"></i> Source Protected</small>
                   </div>
-                  <pre class="bg-dark-gradient p-3 rounded-3 text-light border border-secondary overflow-x-auto fs-6 font-monospace mb-0" style="max-height: 180px;"><code class="language-lua"><%= loaderShortcut %></code></pre>
+                  <pre class="bg-dark-gradient p-3 rounded-3 text-white border border-secondary overflow-x-auto fs-6 font-monospace mb-0" style="max-height: 180px;"><code class="language-lua"><%= loaderShortcut %></code></pre>
                 </div>
+
+                <!-- Community Comments Drawer -->
+                <div class="comments-section bg-dark-glass p-3 rounded-3 border border-secondary">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="font-orbitron small text-white"><i class="fa-solid fa-comments me-1 text-zinc-muted"></i> COMMUNITY COMMENTS</span>
+                    <button class="btn btn-link text-zinc-muted p-0 text-decoration-none small" type="button" data-bs-toggle="collapse" data-bs-target="#commentsCollapse<%= script.id %>">
+                      Toggle Comments
+                    </button>
+                  </div>
+
+                  <div class="collapse show" id="commentsCollapse<%= script.id %>">
+                    <!-- Post Comment Form -->
+                    <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                      <form class="comment-form mb-3" data-script-id="<%= script.id %>">
+                        <div class="input-group">
+                          <input type="text" class="form-control bg-dark text-white border-secondary small comment-input" placeholder="Write a comment..." required>
+                          <button type="submit" class="btn btn-zinc-white btn-sm px-3">Post</button>
+                        </div>
+                      </form>
+                    <% } else { %>
+                      <p class="text-zinc-subtle small mb-3"><i class="fa-solid fa-info-circle me-1"></i> <a href="/profile" class="text-white">Sign in</a> to post comments.</p>
+                    <% } %>
+
+                    <!-- Comments List Container -->
+                    <div class="comments-list" id="commentsList<%= script.id %>" data-script-id="<%= script.id %>">
+                      <div class="text-center py-2 text-zinc-subtle small"><i class="fa-solid fa-spinner fa-spin me-1"></i> Loading comments...</div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
         <% }) %>
       </div>
     <% } else { %>
-
-      <div class="glass-card text-center p-5 rounded-4 border-purple">
-        <i class="fa-solid fa-folder-open text-secondary fs-1 mb-3"></i>
-        <h4 class="font-orbitron text-secondary">No Scripts Uploaded Yet</h4>
-        <p class="text-muted">Scripts for this map will be published soon by the administrator.</p>
+      <div class="glass-card text-center p-5 rounded-4 border-zinc">
+        <i class="fa-solid fa-folder-open text-zinc-subtle fs-1 mb-3"></i>
+        <h4 class="font-orbitron text-zinc-muted">No Scripts Uploaded Yet</h4>
+        <p class="text-zinc-subtle small">Scripts for this map will be published soon by the administrator.</p>
       </div>
     <% } %>
   </section>
@@ -123,25 +157,25 @@
 <!-- 5-Second AdSense Copy Interstitial Modal -->
 <div class="modal fade" id="copyAdModal" tabindex="-1" aria-labelledby="copyAdModalLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content glass-card border-cyan rounded-4 text-light">
-      <div class="modal-header border-purple">
-        <h5 class="modal-title font-orbitron text-neon-cyan" id="copyAdModalLabel">
-          <i class="fa-solid fa-unlock me-2"></i>UNLOCKING ROBLOX SCRIPT
+    <div class="modal-content glass-card border-zinc rounded-4 text-white">
+      <div class="modal-header border-zinc">
+        <h5 class="modal-title font-orbitron text-white" id="copyAdModalLabel">
+          <i class="fa-solid fa-unlock me-2 text-emerald"></i>UNLOCKING ROBLOX SCRIPT
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       
       <div class="modal-body text-center py-4">
-        <p class="text-secondary mb-3">Please support our free platform. Script will copy automatically after sponsor view.</p>
+        <p class="text-zinc-muted mb-3">Please support our free platform. Script will copy automatically after sponsor view.</p>
         
         <!-- Ad Unit inside Modal -->
-        <div class="my-3 p-3 bg-dark-gradient rounded border border-purple">
-          <div class="text-cyan font-orbitron fw-bold mb-1"><i class="fa-solid fa-ad me-1"></i> SPONSOR ANNOUNCEMENT</div>
-          <small class="text-muted">AdSense Unit — Unlocking Script Payload</small>
+        <div class="my-3 p-3 bg-dark-gradient rounded border border-secondary">
+          <div class="text-white font-orbitron fw-bold mb-1"><i class="fa-solid fa-ad me-1 text-emerald"></i> SPONSOR ANNOUNCEMENT</div>
+          <small class="text-zinc-muted">AdSense Unit — Unlocking Script Payload</small>
         </div>
 
         <div class="countdown-wrapper mt-4">
-          <button id="skipAdBtn" class="btn btn-purple font-orbitron fw-bold px-5 py-2 rounded-pill" disabled>
+          <button id="skipAdBtn" class="btn btn-zinc-white font-orbitron px-5 py-2 rounded-pill" disabled>
             <i class="fa-solid fa-spinner fa-spin me-2" id="adSpinner"></i>
             SKIP AD IN <span id="adCountdown">5</span>s
           </button>
@@ -160,12 +194,10 @@
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Background
-    ctx.fillStyle = '#0a0a1a';
+    ctx.fillStyle = '#09090b';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Grid Lines
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.lineWidth = 1;
     for(let x = 0; x < canvas.width; x += 30) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
@@ -175,41 +207,117 @@
     }
 
     if (type === 'ESP') {
-      // Draw ESP Boxes
-      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeStyle = '#10b981';
       ctx.lineWidth = 2;
       ctx.strokeRect(150, 40, 60, 120);
-      ctx.fillStyle = '#00f0ff';
+      ctx.fillStyle = '#10b981';
       ctx.font = '12px Orbitron';
       ctx.fillText('Player1 [100m]', 140, 30);
 
-      ctx.strokeStyle = '#b300ff';
+      ctx.strokeStyle = '#f43f5e';
       ctx.strokeRect(380, 70, 50, 100);
-      ctx.fillStyle = '#b300ff';
+      ctx.fillStyle = '#f43f5e';
       ctx.fillText('Enemy [45m]', 375, 60);
     } else if (type === 'Aimbot') {
-      // Draw FOV Circle & Crosshair
-      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeStyle = '#fafafa';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(canvas.width/2, canvas.height/2, 70, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.fillStyle = '#ff0055';
+      ctx.fillStyle = '#f43f5e';
       ctx.fillRect(canvas.width/2 - 4, canvas.height/2 - 4, 8, 8);
-      ctx.fillStyle = '#00f0ff';
+      ctx.fillStyle = '#fafafa';
       ctx.font = '12px Orbitron';
       ctx.fillText('AIMBOT FOV LOCK ACTIVE', canvas.width/2 - 80, canvas.height/2 + 95);
     } else {
-      // AutoFarm Animation
-      ctx.fillStyle = '#b300ff';
+      ctx.fillStyle = '#10b981';
       ctx.font = '14px Orbitron';
       ctx.fillText('⚡ AUTOFARM ACTIVE: Collecting Coins + Auto-Attacking Mobs...', 80, canvas.height/2);
     }
   }
 
-  // Run initial ESP canvas simulation on load
-  document.addEventListener('DOMContentLoaded', () => runSimulatedPreview('ESP'));
+  // Load comments & handles Likes
+  document.addEventListener('DOMContentLoaded', () => {
+    // Fetch comments for all visible scripts
+    document.querySelectorAll('.comments-list').forEach(container => {
+      const scriptId = container.getAttribute('data-script-id');
+      fetchComments(scriptId, container);
+    });
+
+    // Handle Comment Submission
+    document.querySelectorAll('.comment-form').forEach(form => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const scriptId = form.getAttribute('data-script-id');
+        const input = form.querySelector('.comment-input');
+        const content = input.value.trim();
+        if (!content) return;
+
+        try {
+          const res = await fetch(`/api/scripts/${scriptId}/comments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content })
+          });
+          const data = await res.json();
+          if (data.success) {
+            input.value = '';
+            const container = document.getElementById(`commentsList${scriptId}`);
+            fetchComments(scriptId, container);
+          } else {
+            alert(data.error || 'Failed to post comment');
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    });
+
+    // Handle Like Toggle
+    document.querySelectorAll('.like-script-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const scriptId = btn.getAttribute('data-script-id');
+        try {
+          const res = await fetch(`/api/scripts/${scriptId}/like`, { method: 'POST' });
+          const data = await res.json();
+          if (data.success) {
+            btn.querySelector('.like-count').textContent = data.likeCount;
+          } else {
+            alert(data.error || 'Please sign in to like scripts');
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    });
+  });
+
+  async function fetchComments(scriptId, container) {
+    try {
+      const res = await fetch(`/api/scripts/${scriptId}/comments`);
+      const comments = await res.json();
+      if (!comments || comments.length === 0) {
+        container.innerHTML = `<div class="text-zinc-subtle small py-1">No comments yet. Be the first to comment!</div>`;
+        return;
+      }
+
+      container.innerHTML = comments.map(c => `
+        <div class="d-flex align-items-start gap-2 py-2 border-bottom border-dark">
+          <img src="${c.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(c.user_name)}" width="24" height="24" class="rounded-circle mt-1" alt="User">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="small font-orbitron fw-bold text-white">${c.user_name}</span>
+              <span class="text-zinc-subtle" style="font-size: 0.75rem;">${new Date(c.created_at).toLocaleDateString()}</span>
+            </div>
+            <div class="text-zinc-muted small">${c.content}</div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div class="text-danger small">Failed to load comments</div>`;
+    }
+  }
 </script>
 
 <%- include('partials/footer') %>

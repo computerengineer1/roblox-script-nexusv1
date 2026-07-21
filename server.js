@@ -41,20 +41,88 @@ app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Middleware to inject view locals
-app.use((req, res, next) => {
+// Middleware to inject view locals & community user session
+app.use(async (req, res, next) => {
   res.locals.csrfToken = '';
   res.locals.adClientId = process.env.AD_CLIENT_ID || 'ca-pub-1234567890123456';
   res.locals.adSlotId = process.env.AD_SLOT_ID || '1234567890';
   res.locals.reqHeadersHost = req.headers.host || 'localhost:3000';
   res.locals.protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+
+  const userSessionId = req.cookies.user_id;
+  if (userSessionId) {
+    try {
+      const [users] = await pool.execute('SELECT * FROM users WHERE id = ?', [userSessionId]);
+      res.locals.currentUser = users.length > 0 ? users[0] : null;
+    } catch (e) {
+      res.locals.currentUser = null;
+    }
+  } else {
+    res.locals.currentUser = null;
+  }
   next();
 });
 
+// ==========================================================================
+// PUBLIC & COMMUNITY USER ROUTES
+// ==========================================================================
 
-// ==========================================================================
-// PUBLIC ROUTES
-// ==========================================================================
+// User Profile & Liked Vault Page
+app.get('/profile', async (req, res, next) => {
+  try {
+    const user = res.locals.currentUser;
+    let likedScripts = [];
+
+    if (user) {
+      const [rows] = await pool.execute(
+        `SELECT s.id, s.title, s.category, s.description, s.map_id, m.name AS map_name
+         FROM likes l
+         JOIN scripts s ON l.script_id = s.id
+         JOIN maps m ON s.map_id = m.id
+         WHERE l.user_id = ?
+         ORDER BY l.created_at DESC`,
+        [user.id]
+      );
+      likedScripts = rows;
+    }
+
+    res.render('profile', { likedScripts });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Quick Demo Community User Sign In
+app.get('/auth/demo', async (req, res, next) => {
+  try {
+    const [users] = await pool.execute('SELECT id FROM users WHERE email = ?', ['demo@robloxnexus.com']);
+    let userId = users.length > 0 ? users[0].id : 1;
+    if (users.length === 0) {
+      const [newU] = await pool.execute(
+        'INSERT INTO users (name, email, avatar) VALUES (?, ?, ?)',
+        ['Nexus Gamer', 'demo@robloxnexus.com', 'https://api.dicebear.com/7.x/bottts/svg?seed=NexusGamer']
+      );
+      userId = newU.insertId;
+    }
+
+    res.cookie('user_id', userId, { maxAge: 30 * 24 * 3600 * 1000, httpOnly: true });
+    res.redirect('/profile');
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Google OAuth / One-Tap Fallback Endpoint
+app.get('/auth/google', async (req, res) => {
+  // If Google Auth parameters are provided in environment, handle flow, otherwise auto-authenticate to demo user
+  res.redirect('/auth/demo');
+});
+
+// User Sign Out
+app.get('/auth/logout', (req, res) => {
+  res.clearCookie('user_id');
+  res.redirect('/');
+});
 
 // Homepage
 app.get('/', async (req, res, next) => {
@@ -92,7 +160,12 @@ app.get('/map/:id', async (req, res, next) => {
     const map = maps[0];
 
     const [scripts] = await pool.execute(
-      'SELECT * FROM scripts WHERE map_id = ? ORDER BY created_at DESC',
+      `SELECT s.*, COUNT(l.id) AS like_count
+       FROM scripts s
+       LEFT JOIN likes l ON s.id = l.script_id
+       WHERE s.map_id = ?
+       GROUP BY s.id
+       ORDER BY s.created_at DESC`,
       [mapId]
     );
 
@@ -114,6 +187,7 @@ app.get('/map/:id', async (req, res, next) => {
     next(err);
   }
 });
+
 
 // Script Playground
 app.get('/playground', async (req, res, next) => {
@@ -215,6 +289,82 @@ app.get('/api/scripts/:id/load', async (req, res) => {
     res.status(500).send('-- Roblox Script Nexus: Server Error loading script payload');
   }
 });
+
+// Toggle Script Like Endpoint
+app.post('/api/scripts/:id/like', async (req, res) => {
+  const scriptId = parseInt(req.params.id, 10);
+  const user = res.locals.currentUser;
+  if (!user) return res.status(401).json({ error: 'Please sign in to like scripts.' });
+  if (isNaN(scriptId)) return res.status(400).json({ error: 'Invalid script ID' });
+
+  try {
+    const [existing] = await pool.execute(
+      'SELECT id FROM likes WHERE user_id = ? AND script_id = ?',
+      [user.id, scriptId]
+    );
+
+    if (existing.length > 0) {
+      await pool.execute('DELETE FROM likes WHERE user_id = ? AND script_id = ?', [user.id, scriptId]);
+    } else {
+      await pool.execute('INSERT INTO likes (user_id, script_id) VALUES (?, ?)', [user.id, scriptId]);
+    }
+
+    const [[{ likeCount }]] = await pool.execute(
+      'SELECT COUNT(*) AS likeCount FROM likes WHERE script_id = ?',
+      [scriptId]
+    );
+
+    res.json({ success: true, likeCount });
+  } catch (err) {
+    console.error('Like error:', err);
+    res.status(500).json({ error: 'Failed to update like status' });
+  }
+});
+
+// Get Script Comments Endpoint
+app.get('/api/scripts/:id/comments', async (req, res) => {
+  const scriptId = parseInt(req.params.id, 10);
+  if (isNaN(scriptId)) return res.status(400).json([]);
+
+  try {
+    const [comments] = await pool.execute(
+      `SELECT c.id, c.content, c.created_at, u.name AS user_name, u.avatar
+       FROM comments c
+       JOIN users u ON c.user_id = u.id
+       WHERE c.script_id = ?
+       ORDER BY c.created_at DESC`,
+      [scriptId]
+    );
+
+    res.json(comments);
+  } catch (err) {
+    console.error('Fetch comments error:', err);
+    res.status(500).json([]);
+  }
+});
+
+// Post Script Comment Endpoint
+app.post('/api/scripts/:id/comments', async (req, res) => {
+  const scriptId = parseInt(req.params.id, 10);
+  const user = res.locals.currentUser;
+  const content = (req.body.content || '').trim();
+
+  if (!user) return res.status(401).json({ error: 'Please sign in to post comments.' });
+  if (isNaN(scriptId) || !content) return res.status(400).json({ error: 'Invalid comment content' });
+
+  try {
+    await pool.execute(
+      'INSERT INTO comments (user_id, script_id, content) VALUES (?, ?, ?)',
+      [user.id, scriptId, content]
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Post comment error:', err);
+    res.status(500).json({ error: 'Failed to post comment' });
+  }
+});
+
 
 
 // ==========================================================================

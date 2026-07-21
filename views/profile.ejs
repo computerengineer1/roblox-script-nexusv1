@@ -1,0 +1,105 @@
+<%- include('partials/header', { title: 'User Profile - Roblox Script Nexus' }) %>
+
+<main class="container py-5 flex-grow-1">
+
+  <div class="max-w-700 mx-auto">
+    <% if (currentUser) { %>
+      <!-- Logged In User Profile Card -->
+      <div class="card glass-card border-zinc rounded-4 p-4 p-md-5 mb-5 shadow-lg position-relative overflow-hidden">
+        <div class="d-flex flex-column flex-md-row align-items-center gap-4 text-center text-md-start">
+          <div class="position-relative">
+            <img src="<%= currentUser.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(currentUser.name) %>" class="rounded-circle border border-secondary p-1" width="96" height="96" alt="<%= currentUser.name %>">
+            <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle p-2" title="Active Account"></span>
+          </div>
+
+          <div class="flex-grow-1">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
+              <h2 class="font-orbitron fw-bold mb-0 text-white"><%= currentUser.name %></h2>
+              <span class="badge bg-dark border border-secondary text-zinc-muted"><i class="fa-solid fa-shield-halved text-emerald me-1"></i> Community Member</span>
+            </div>
+            <p class="text-zinc-muted small mb-2"><i class="fa-regular fa-envelope me-1"></i> <%= currentUser.email %></p>
+            <p class="text-zinc-subtle small mb-0"><i class="fa-regular fa-calendar-check me-1"></i> Member since <%= new Date(currentUser.created_at || Date.now()).toLocaleDateString() %></p>
+          </div>
+
+          <div>
+            <a href="/auth/logout" class="btn btn-zinc-dark text-danger btn-sm px-4 rounded-pill">
+              <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Liked Scripts Section -->
+      <section class="mb-4">
+        <h4 class="font-orbitron text-white mb-4"><i class="fa-solid fa-heart text-rose me-2"></i>YOUR SAVED & LIKED SCRIPTS</h4>
+
+        <% if (likedScripts && likedScripts.length > 0) { %>
+          <div class="row g-4">
+            <% likedScripts.forEach(script => { 
+                 const loaderShortcut = `loadstring(game:HttpGet("${protocol}://${reqHeadersHost}/api/scripts/${script.id}/load"))()`;
+            %>
+              <div class="col-12 col-md-6">
+                <div class="card glass-card border-muted rounded-4 p-4 hover-glow">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="badge bg-dark border border-secondary text-zinc-muted"><%= script.map_name || 'Game Map' %></span>
+                    <span class="badge bg-dark text-emerald border border-secondary"><i class="fa-solid fa-check me-1"></i> Saved</span>
+                  </div>
+                  <h5 class="font-orbitron text-white mb-2"><%= script.title %></h5>
+                  <p class="text-zinc-muted small line-clamp-2 mb-3"><%= script.description %></p>
+                  
+                  <div class="d-flex align-items-center justify-content-between">
+                    <a href="/map/<%= script.map_id %>" class="btn btn-zinc-dark btn-sm rounded-pill px-3">
+                      View Map <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                    <button class="btn btn-zinc-white btn-sm px-3 copy-script-btn"
+                            data-script-id="<%= script.id %>"
+                            data-script-title="<%= script.title %>"
+                            data-script-code="<%= loaderShortcut %>">
+                      <i class="fa-solid fa-copy me-1"></i> Copy Loader
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="glass-card text-center p-5 rounded-4 border-muted">
+            <i class="fa-regular fa-heart text-zinc-subtle display-4 mb-3"></i>
+            <h5 class="font-orbitron text-zinc-muted">No Liked Scripts Yet</h5>
+            <p class="text-zinc-subtle small mb-0">Browse script vaults and click the heart icon to save your favorite scripts here.</p>
+          </div>
+        <% } %>
+      </section>
+
+    <% } else { %>
+
+      <!-- Guest Login / Join Card -->
+      <div class="card glass-card border-zinc rounded-4 p-4 p-md-5 text-center shadow-lg">
+        <div class="brand-icon mb-3">
+          <i class="fa-solid fa-circle-user display-3 text-zinc-muted"></i>
+        </div>
+        <h2 class="font-orbitron fw-bold text-white mb-2">JOIN THE COMMUNITY</h2>
+        <p class="text-zinc-muted max-w-500 mx-auto mb-4">
+          Log in to like scripts, save your custom loadouts, post comments, and get notified about rare map updates.
+        </p>
+
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-3">
+          <!-- Google Login Button -->
+          <a href="/auth/google" class="btn btn-zinc-white px-4 py-2 font-orbitron d-flex align-items-center justify-content-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.3c0 2.9.7 5.6 1.9 8l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
+            Sign in with Google
+          </a>
+
+          <!-- Instant Demo Community Login -->
+          <a href="/auth/demo" class="btn btn-zinc-dark px-4 py-2 font-orbitron">
+            <i class="fa-solid fa-bolt text-emerald me-1"></i> Quick Demo Login
+          </a>
+        </div>
+      </div>
+
+    <% } %>
+  </div>
+
+</main>
+
+<%- include('partials/footer') %>
