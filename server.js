@@ -19,9 +19,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const COOKIE_SECRET = process.env.COOKIE_SECRET || 'nexus-cookie-secret-key-2026';
 
+// Trust proxy (required for Vercel/Render behind reverse proxy)
+app.set('trust proxy', 1);
+
 // 1. Logging Setup (Console logging)
 app.use(morgan('dev'));
-
 
 // 2. Security Headers & Global Rate Limiting
 app.use(securityHeaders);
@@ -42,11 +44,12 @@ app.set('view engine', 'ejs');
 // 5. CSRF Protection Setup (Double-Submit Cookie Pattern)
 const { generateToken, doubleCsrfProtection } = doubleCsrf({
   getSecret: () => COOKIE_SECRET,
-  cookieName: 'csrf-token',
+  cookieName: '__csrf',
   cookieOptions: {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production'
+    secure: process.env.NODE_ENV === 'production',
+    path: '/'
   },
   getTokenFromRequest: (req) => {
     return req.headers['x-csrf-token'] || req.body._csrf;
