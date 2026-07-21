@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     debounceTimer = setTimeout(() => {
       fetchSearchResults(query);
-    }, 300);
+    }, 250);
   });
 
   if (searchBtn) {
@@ -53,24 +53,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (maps.length === 0) {
         searchResultsList.innerHTML = `
-          <div class="p-3 text-secondary text-center font-orbitron small">
-            <i class="fa-solid fa-ghost me-2"></i>No game maps or scripts found matching "${escapeHtml(query)}"
+          <div class="p-3 text-zinc-muted text-center font-orbitron small">
+            <i class="fa-solid fa-ghost me-2"></i>No game maps found matching "${escapeHtml(query)}"
           </div>
         `;
       } else {
         maps.forEach(map => {
           const item = document.createElement('a');
           item.href = `/map/${map.id}`;
-          item.className = 'list-group-item list-group-item-action bg-transparent text-light border-0 search-item-hover d-flex align-items-center justify-content-between p-3 rounded-2';
+          item.className = 'list-group-item list-group-item-action bg-transparent text-white border-0 search-item-hover d-flex align-items-center justify-content-between p-3 rounded-3';
           item.innerHTML = `
             <div class="d-flex align-items-center gap-3">
-              <img src="${map.image || 'https://via.placeholder.com/60/0a0a1a/00f0ff'}" class="rounded object-fit-cover" style="width: 50px; height: 35px;" alt="${escapeHtml(map.name)}">
+              <img src="${map.image || 'https://via.placeholder.com/60/09090b/27272a?text=' + encodeURIComponent(map.name)}" class="rounded-2 object-fit-cover border border-secondary" style="width: 52px; height: 38px;" alt="${escapeHtml(map.name)}">
               <div>
-                <h6 class="font-orbitron text-neon-cyan mb-0">${escapeHtml(map.name)}</h6>
-                <small class="text-secondary line-clamp-1">${escapeHtml(map.description || '')}</small>
+                <h6 class="font-orbitron text-white mb-0">${escapeHtml(map.name)}</h6>
+                <small class="text-zinc-muted line-clamp-1">${escapeHtml(map.description || '')}</small>
               </div>
             </div>
-            <span class="badge bg-purple font-orbitron">${map.script_count || 0} Scripts</span>
+            <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron">${map.script_count || 0} Scripts</span>
           `;
           searchResultsList.appendChild(item);
         });
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function escapeHtml(str) {
-    return str
+    return (str || '')
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')

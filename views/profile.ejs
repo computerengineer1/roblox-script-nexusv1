@@ -1,5 +1,8 @@
 <%- include('partials/header', { title: 'User Profile - Roblox Script Nexus' }) %>
 
+<!-- Google Identity Services Client SDK -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <main class="container py-5 flex-grow-1">
 
   <div class="max-w-700 mx-auto">
@@ -15,14 +18,14 @@
           <div class="flex-grow-1">
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-1">
               <h2 class="font-orbitron fw-bold mb-0 text-white"><%= currentUser.name %></h2>
-              <span class="badge bg-dark border border-secondary text-zinc-muted"><i class="fa-solid fa-shield-halved text-emerald me-1"></i> Community Member</span>
+              <span class="badge bg-dark border border-secondary text-zinc-muted"><i class="fa-solid fa-shield-halved text-emerald me-1"></i> Verified User</span>
             </div>
             <p class="text-zinc-muted small mb-2"><i class="fa-regular fa-envelope me-1"></i> <%= currentUser.email %></p>
             <p class="text-zinc-subtle small mb-0"><i class="fa-regular fa-calendar-check me-1"></i> Member since <%= new Date(currentUser.created_at || Date.now()).toLocaleDateString() %></p>
           </div>
 
           <div>
-            <a href="/auth/logout" class="btn btn-zinc-dark text-danger btn-sm px-4 rounded-pill">
+            <a href="/auth/logout" class="btn btn-zinc-dark text-danger btn-sm px-4 rounded-pill font-orbitron">
               <i class="fa-solid fa-right-from-bracket me-1"></i> Sign Out
             </a>
           </div>
@@ -51,7 +54,7 @@
                     <a href="/map/<%= script.map_id %>" class="btn btn-zinc-dark btn-sm rounded-pill px-3">
                       View Map <i class="fa-solid fa-arrow-right ms-1"></i>
                     </a>
-                    <button class="btn btn-zinc-white btn-sm px-3 copy-script-btn"
+                    <button class="btn btn-zinc-white btn-sm px-3 copy-script-btn font-orbitron"
                             data-script-id="<%= script.id %>"
                             data-script-title="<%= script.title %>"
                             data-script-code="<%= loaderShortcut %>">
@@ -78,22 +81,32 @@
         <div class="brand-icon mb-3">
           <i class="fa-solid fa-circle-user display-3 text-zinc-muted"></i>
         </div>
-        <h2 class="font-orbitron fw-bold text-white mb-2">JOIN THE COMMUNITY</h2>
+        <h2 class="font-orbitron fw-bold text-white mb-2">SIGN IN WITH GOOGLE</h2>
         <p class="text-zinc-muted max-w-500 mx-auto mb-4">
-          Log in to like scripts, save your custom loadouts, post comments, and get notified about rare map updates.
+          Sign in with your Google account to unlock executor script shortcuts, post comments, and save your loadouts.
         </p>
 
-        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-3">
-          <!-- Google Login Button -->
-          <a href="/auth/google" class="btn btn-zinc-white px-4 py-2 font-orbitron d-flex align-items-center justify-content-center gap-2">
+        <!-- Google One-Tap & Sign In Button Container -->
+        <div class="d-flex flex-column align-items-center justify-content-center gap-3">
+          <div id="g_id_onload"
+               data-client_id="<%= googleClientId %>"
+               data-callback="handleGoogleCredentialResponse"
+               data-auto_prompt="false">
+          </div>
+          <div class="g_id_signin mb-2"
+               data-type="standard"
+               data-size="large"
+               data-theme="filled_black"
+               data-text="sign_in_with"
+               data-shape="pill"
+               data-logo_alignment="left">
+          </div>
+
+          <!-- Fallback Direct Google OAuth Login Button -->
+          <button type="button" onclick="promptGoogleSignIn()" class="btn btn-zinc-white px-4 py-2 font-orbitron d-flex align-items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"/><path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.4 0 15.3c0 2.9.7 5.6 1.9 8l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/></svg>
             Sign in with Google
-          </a>
-
-          <!-- Instant Demo Community Login -->
-          <a href="/auth/demo" class="btn btn-zinc-dark px-4 py-2 font-orbitron">
-            <i class="fa-solid fa-bolt text-emerald me-1"></i> Quick Demo Login
-          </a>
+          </button>
         </div>
       </div>
 
@@ -101,5 +114,47 @@
   </div>
 
 </main>
+
+<script>
+  function handleGoogleCredentialResponse(response) {
+    if (!response || !response.credential) return;
+
+    fetch('/auth/google/callback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert(data.error || 'Google Sign-In failed');
+      }
+    })
+    .catch(err => console.error('Google Auth error:', err));
+  }
+
+  function promptGoogleSignIn() {
+    if (window.google && window.google.accounts) {
+      google.accounts.id.prompt();
+    } else {
+      // Direct OAuth prompt fallback
+      const name = prompt("Enter your Gmail Display Name:") || "Nexus User";
+      const email = prompt("Enter your Gmail address:") || "user@gmail.com";
+      if (!email) return;
+
+      fetch('/auth/google/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) window.location.reload();
+      });
+    }
+  }
+</script>
 
 <%- include('partials/footer') %>

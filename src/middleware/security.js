@@ -6,7 +6,8 @@ const securityHeaders = helmet({
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
-        "'unsafe-inline'", // Required for Bootstrap & dynamic component scripts
+        "'unsafe-inline'",
+        "https://accounts.google.com",
         "https://pagead2.googlesyndication.com",
         "https://cdnjs.cloudflare.com",
         "https://cdn.jsdelivr.net"
@@ -14,6 +15,7 @@ const securityHeaders = helmet({
       styleSrc: [
         "'self'",
         "'unsafe-inline'",
+        "https://accounts.google.com",
         "https://fonts.googleapis.com",
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com"
@@ -26,12 +28,19 @@ const securityHeaders = helmet({
       imgSrc: [
         "'self'",
         "data:",
+        "https://lh3.googleusercontent.com",
+        "https://*.googleusercontent.com",
+        "https://api.dicebear.com",
         "https://pagead2.googlesyndication.com",
         "https://via.placeholder.com"
       ],
-      connectSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+        "https://accounts.google.com"
+      ],
       frameSrc: [
         "'self'",
+        "https://accounts.google.com",
         "https://googleads.g.doubleclick.net",
         "https://pagead2.googlesyndication.com"
       ]

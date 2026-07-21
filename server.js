@@ -46,6 +46,7 @@ app.use(async (req, res, next) => {
   res.locals.csrfToken = '';
   res.locals.adClientId = process.env.AD_CLIENT_ID || 'ca-pub-1234567890123456';
   res.locals.adSlotId = process.env.AD_SLOT_ID || '1234567890';
+  res.locals.googleClientId = process.env.GOOGLE_CLIENT_ID || '1234567890-example.apps.googleusercontent.com';
   res.locals.reqHeadersHost = req.headers.host || 'localhost:3000';
   res.locals.protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
 
@@ -92,30 +93,57 @@ app.get('/profile', async (req, res, next) => {
   }
 });
 
-// Quick Demo Community User Sign In
-app.get('/auth/demo', async (req, res, next) => {
+// Real Google OAuth / One-Tap Callback Endpoint
+app.post('/auth/google/callback', async (req, res) => {
   try {
-    const [users] = await pool.execute('SELECT id FROM users WHERE email = ?', ['demo@robloxnexus.com']);
-    let userId = users.length > 0 ? users[0].id : 1;
-    if (users.length === 0) {
-      const [newU] = await pool.execute(
-        'INSERT INTO users (name, email, avatar) VALUES (?, ?, ?)',
-        ['Nexus Gamer', 'demo@robloxnexus.com', 'https://api.dicebear.com/7.x/bottts/svg?seed=NexusGamer']
-      );
-      userId = newU.insertId;
+    let email = req.body.email;
+    let name = req.body.name;
+    let avatar = req.body.picture || null;
+    let googleId = req.body.googleId || null;
+
+    // Decode Google JWT ID Token if provided by GSI SDK
+    if (req.body.credential) {
+      const parts = req.body.credential.split('.');
+      if (parts.length === 3) {
+        const payloadJson = Buffer.from(parts[1], 'base64url').toString('utf8');
+        const payload = JSON.parse(payloadJson);
+        googleId = payload.sub;
+        email = payload.email;
+        name = payload.name || payload.email.split('@')[0];
+        avatar = payload.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
+      }
     }
 
-    res.cookie('user_id', userId, { maxAge: 30 * 24 * 3600 * 1000, httpOnly: true });
-    res.redirect('/profile');
-  } catch (err) {
-    next(err);
-  }
-});
+    if (!email) return res.status(400).json({ error: 'Email is required for authentication' });
 
-// Google OAuth / One-Tap Fallback Endpoint
-app.get('/auth/google', async (req, res) => {
-  // If Google Auth parameters are provided in environment, handle flow, otherwise auto-authenticate to demo user
-  res.redirect('/auth/demo');
+    if (!avatar) {
+      avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name || email)}`;
+    }
+
+    // Check if user exists or create new user with real Gmail avatar
+    const [existing] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
+    let userId;
+
+    if (existing.length > 0) {
+      userId = existing[0].id;
+      await pool.execute(
+        'UPDATE users SET name = ?, avatar = ?, google_id = COALESCE(?, google_id) WHERE id = ?',
+        [name || existing[0].name, avatar, googleId, userId]
+      );
+    } else {
+      const [inserted] = await pool.execute(
+        'INSERT INTO users (google_id, email, name, avatar) VALUES (?, ?, ?, ?)',
+        [googleId, email, name || 'Google User', avatar]
+      );
+      userId = inserted.insertId;
+    }
+
+    res.cookie('user_id', userId, { maxAge: 30 * 24 * 3600 * 1000, httpOnly: true, sameSite: 'lax' });
+    res.json({ success: true, redirect: '/profile' });
+  } catch (err) {
+    console.error('Google Callback Error:', err);
+    res.status(500).json({ error: 'Google Authentication failed' });
+  }
 });
 
 // User Sign Out
@@ -160,11 +188,10 @@ app.get('/map/:id', async (req, res, next) => {
     const map = maps[0];
 
     const [scripts] = await pool.execute(
-      `SELECT s.*, COUNT(l.id) AS like_count
+      `SELECT s.*,
+              (SELECT COUNT(*) FROM likes l WHERE l.script_id = s.id) AS like_count
        FROM scripts s
-       LEFT JOIN likes l ON s.id = l.script_id
        WHERE s.map_id = ?
-       GROUP BY s.id
        ORDER BY s.created_at DESC`,
       [mapId]
     );
