@@ -3,10 +3,17 @@ const path = require('path');
 const fs = require('fs');
 const fileType = require('file-type');
 
-const uploadDir = path.join(__dirname, '../../public/uploads/maps');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const isVercel = process.env.VERCEL || process.env.NODE_ENV === 'production';
+const uploadDir = isVercel ? '/tmp' : path.join(__dirname, '../../public/uploads/maps');
+
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn('Unable to create upload directory on startup (this is expected in serverless environments):', err.message);
 }
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

@@ -19,10 +19,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const COOKIE_SECRET = process.env.COOKIE_SECRET || 'nexus-cookie-secret-key-2026';
 
-// 1. Logging Setup (Console & access.log)
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
-app.use(morgan('combined', { stream: accessLogStream }));
+// 1. Logging Setup (Console logging)
 app.use(morgan('dev'));
+
 
 // 2. Security Headers & Global Rate Limiting
 app.use(securityHeaders);
@@ -453,6 +452,11 @@ app.use((err, req, res, next) => {
 });
 
 // Start Express Application Server
-app.listen(PORT, () => {
-  console.log(`🚀 Roblox Script Nexus Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Roblox Script Nexus Server running on http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
+
