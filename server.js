@@ -77,12 +77,12 @@ app.use(async (req, res, next) => {
 // ==========================================================================
 
 // User Profile & Liked Vault Page
-app.get('/profile', async (req, res, next) => {
-  try {
-    const user = res.locals.currentUser;
-    let likedScripts = [];
+app.get('/profile', async (req, res) => {
+  const user = res.locals.currentUser;
+  let likedScripts = [];
 
-    if (user) {
+  if (user && user.id) {
+    try {
       const [rows] = await pool.execute(
         `SELECT s.id, s.title, s.category, s.description, s.map_id, m.name AS map_name
          FROM likes l
@@ -92,13 +92,13 @@ app.get('/profile', async (req, res, next) => {
          ORDER BY l.created_at DESC`,
         [user.id]
       );
-      likedScripts = rows;
+      likedScripts = rows || [];
+    } catch (err) {
+      console.warn('Profile liked scripts DB fetch error:', err.message);
     }
-
-    res.render('profile', { likedScripts });
-  } catch (err) {
-    next(err);
   }
+
+  res.render('profile', { likedScripts });
 });
 
 // Real Google OAuth / One-Tap Callback Endpoint
@@ -623,7 +623,7 @@ app.post(
       res.redirect('/admin/dashboard?success=Map+created+successfully');
     } catch (err) {
       console.error('Add map error:', err);
-      res.redirect('/admin/dashboard?error=Failed+to+create+map');
+      res.redirect('/admin/dashboard?error=' + encodeURIComponent('Failed to create map: ' + (err.message || 'Database error')));
     }
   }
 );

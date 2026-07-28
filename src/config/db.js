@@ -39,11 +39,16 @@ async function ensureTables() {
       CREATE TABLE IF NOT EXISTS maps (
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
-          image VARCHAR(255),
+          image LONGTEXT,
           description TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
+
+    // Ensure existing column is modified to LONGTEXT
+    try {
+      await pool.execute('ALTER TABLE maps MODIFY COLUMN image LONGTEXT;');
+    } catch (alterErr) {}
 
     await pool.execute(`
       CREATE TABLE IF NOT EXISTS scripts (

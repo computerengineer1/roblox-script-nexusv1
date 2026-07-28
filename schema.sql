@@ -27,7 +27,7 @@ CREATE TABLE users (
 CREATE TABLE maps (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    image VARCHAR(255),
+    image LONGTEXT,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FULLTEXT INDEX ft_maps_search (name, description)
