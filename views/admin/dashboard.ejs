@@ -236,8 +236,12 @@
           </div>
           <div class="mb-3">
             <label for="mapImageUrl" class="form-label font-orbitron small text-cyan">IMAGE URL (Imgur, Discord CDN, Roblox Link)</label>
-            <input type="text" id="mapImageUrl" name="image_url" class="form-control bg-dark-glass text-light border-cyan" placeholder="https://i.imgur.com/example.png or Roblox image link">
-            <div class="form-text text-secondary small">Paste a direct image URL OR upload a file below.</div>
+            <input type="text" id="mapImageUrl" name="image_url" class="form-control bg-dark-glass text-light border-cyan" placeholder="https://www.roblox.com/games/2753915549/Blox-Fruits">
+            <div class="form-text text-secondary small">Paste any Roblox game link, ID, or image URL.</div>
+            <div id="robloxPreviewBox" class="mt-2 d-none text-center p-2 rounded bg-dark border border-secondary">
+              <img id="robloxPreviewImg" src="" class="rounded object-fit-cover" style="max-height: 140px; width: auto;" alt="Roblox Map Preview">
+              <small class="d-block text-success mt-1 font-orbitron"><i class="fa-solid fa-check-circle me-1"></i>Roblox Image Resolved!</small>
+            </div>
           </div>
           <div class="mb-3">
             <label for="mapImage" class="form-label font-orbitron small text-cyan">OR UPLOAD IMAGE FILE</label>
@@ -313,5 +317,58 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Live Roblox Link Image Resolver Preview for Admin Modal
+  const urlInput = document.getElementById('mapImageUrl');
+  const previewBox = document.getElementById('robloxPreviewBox');
+  const previewImg = document.getElementById('robloxPreviewImg');
+
+  if (urlInput && previewBox && previewImg) {
+    let previewDebounce = null;
+
+    urlInput.addEventListener('input', () => {
+      clearTimeout(previewDebounce);
+      const val = urlInput.value.trim();
+      if (!val) {
+        previewBox.classList.add('d-none');
+        return;
+      }
+
+      previewDebounce = setTimeout(async () => {
+        const idMatch = val.match(/(\d{5,15})/);
+        if (idMatch) {
+          const id = idMatch[1];
+          try {
+            const res = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${id}&size=512x512&format=Png&isCircular=false`);
+            const data = await res.json();
+            if (data && data.data && data.data[0] && data.data[0].imageUrl && data.data[0].state === 'Completed') {
+              previewImg.src = data.data[0].imageUrl;
+              previewBox.classList.remove('d-none');
+              return;
+            }
+          } catch (e) {}
+
+          try {
+            const res = await fetch(`https://thumbnails.roblox.com/v1/assets?assetIds=${id}&size=512x512&format=Png&isCircular=false`);
+            const data = await res.json();
+            if (data && data.data && data.data[0] && data.data[0].imageUrl && data.data[0].state === 'Completed') {
+              previewImg.src = data.data[0].imageUrl;
+              previewBox.classList.remove('d-none');
+              return;
+            }
+          } catch (e) {}
+        }
+
+        if (val.startsWith('http')) {
+          previewImg.src = val;
+          previewBox.classList.remove('d-none');
+        } else {
+          previewBox.classList.add('d-none');
+        }
+      }, 300);
+    });
+  }
+</script>
 
 <%- include('../partials/footer') %>

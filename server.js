@@ -471,42 +471,31 @@ async function resolveRobloxImageUrl(inputUrl) {
   if (!inputUrl || !inputUrl.trim()) return null;
   const url = inputUrl.trim();
 
-  // 1. Roblox Game Link e.g. https://www.roblox.com/games/2753915549/Blox-Fruits
-  const gameMatch = url.match(/roblox\.com\/games\/(\d+)/i);
-  if (gameMatch) {
+  // Extract ANY numeric ID from Roblox link or raw input (e.g. 5 to 15 digits)
+  const idMatch = url.match(/(\d{5,15})/);
+  if (idMatch) {
+    const id = idMatch[1];
+
+    // Try 1: Game Icon Place API
     try {
-      const res = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${gameMatch[1]}&size=512x512&format=Png&isCircular=false`);
+      const res = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${id}&size=512x512&format=Png&isCircular=false`);
       const data = await res.json();
-      if (data && data.data && data.data[0] && data.data[0].imageUrl) {
+      if (data && data.data && data.data[0] && data.data[0].imageUrl && data.data[0].state === 'Completed') {
+        return data.data[0].imageUrl;
+      }
+    } catch (e) {}
+
+    // Try 2: Asset API (Decal/Catalog/Badge)
+    try {
+      const res = await fetch(`https://thumbnails.roblox.com/v1/assets?assetIds=${id}&size=512x512&format=Png&isCircular=false`);
+      const data = await res.json();
+      if (data && data.data && data.data[0] && data.data[0].imageUrl && data.data[0].state === 'Completed') {
         return data.data[0].imageUrl;
       }
     } catch (e) {}
   }
 
-  // 2. Roblox Asset / Decal / Catalog / Badge Link
-  const assetMatch = url.match(/roblox\.com\/(?:library|catalog|asset|badges)\/(\d+)/i) || url.match(/rbxassetid:\/\/(\d+)/i);
-  if (assetMatch) {
-    try {
-      const res = await fetch(`https://thumbnails.roblox.com/v1/assets?assetIds=${assetMatch[1]}&size=512x512&format=Png&isCircular=false`);
-      const data = await res.json();
-      if (data && data.data && data.data[0] && data.data[0].imageUrl) {
-        return data.data[0].imageUrl;
-      }
-    } catch (e) {}
-  }
-
-  // 3. Pure Numeric ID e.g. "2753915549"
-  if (/^\d+$/.test(url)) {
-    try {
-      const res = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${url}&size=512x512&format=Png&isCircular=false`);
-      const data = await res.json();
-      if (data && data.data && data.data[0] && data.data[0].imageUrl) {
-        return data.data[0].imageUrl;
-      }
-    } catch (e) {}
-  }
-
-  // 4. Direct Image URL (Imgur, Discord CDN, etc.)
+  // Fallback: Direct Image URL (Imgur, Discord CDN, etc.)
   return url;
 }
 
