@@ -1,19 +1,29 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+// Auto-fallback away from old expired Aiven DB to new TiDB Cloud Serverless DB
+const rawHost = process.env.DB_HOST || '';
+const isOldAiven = rawHost.includes('aivencloud.com') || !rawHost;
+
+const dbHost = isOldAiven ? 'gateway01.eu-central-1.prod.aws.tidbcloud.com' : rawHost;
+const dbPort = isOldAiven ? 4000 : (process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306);
+const dbUser = isOldAiven ? '2Ak4uZeML1D21Wm.root' : (process.env.DB_USER || 'root');
+const dbPass = isOldAiven ? 'D5YVKmnRFtMOtOrX' : (process.env.DB_PASS || '');
+const dbName = isOldAiven ? 'test' : (process.env.DB_NAME || 'test');
+
 const poolConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
-  user: process.env.DB_USER || 'nexus_user',
-  password: process.env.DB_PASS || '',
-  database: process.env.DB_NAME || 'roblox_scripts',
+  host: dbHost,
+  port: dbPort,
+  user: dbUser,
+  password: dbPass,
+  database: dbName,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
   dateStrings: true
 };
 
-if (process.env.DB_HOST && process.env.DB_HOST !== 'localhost' && process.env.DB_HOST !== '127.0.0.1') {
+if (dbHost && dbHost !== 'localhost' && dbHost !== '127.0.0.1') {
   poolConfig.ssl = { rejectUnauthorized: false };
 }
 
