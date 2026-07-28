@@ -23,10 +23,9 @@ async function seed() {
       CREATE TABLE IF NOT EXISTS maps (
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(255) NOT NULL,
-          image VARCHAR(255),
+          image LONGTEXT,
           description TEXT,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FULLTEXT INDEX ft_maps_search (name, description)
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
@@ -39,8 +38,7 @@ async function seed() {
           code TEXT NOT NULL,
           description TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          CONSTRAINT fk_scripts_map FOREIGN KEY (map_id) REFERENCES maps(id) ON DELETE CASCADE,
-          FULLTEXT INDEX ft_scripts_search (title, description)
+          CONSTRAINT fk_scripts_map FOREIGN KEY (map_id) REFERENCES maps(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
 
