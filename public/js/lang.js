@@ -168,6 +168,26 @@ function applyLang(lang) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Make functions available globally on window
+window.getLang = getLang;
+window.setLang = setLang;
+window.toggleLang = toggleLang;
+
+function initLangSystem() {
   applyLang(getLang());
-});
+
+  const langBtn = document.getElementById('langToggleBtn');
+  if (langBtn && !langBtn.dataset.listenerAttached) {
+    langBtn.dataset.listenerAttached = 'true';
+    langBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleLang();
+    });
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLangSystem);
+} else {
+  initLangSystem();
+}

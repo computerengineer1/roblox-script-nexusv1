@@ -103,31 +103,41 @@ app.post('/auth/google/callback', async (req, res) => {
 
     // Decode Google JWT ID Token if provided by GSI SDK
     if (req.body.credential) {
-      const parts = req.body.credential.split('.');
-      if (parts.length === 3) {
-        const payloadJson = Buffer.from(parts[1], 'base64url').toString('utf8');
-        const payload = JSON.parse(payloadJson);
-        googleId = payload.sub;
-        email = payload.email;
-        name = payload.name || payload.email.split('@')[0];
-        avatar = payload.picture || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`;
+      try {
+        const parts = req.body.credential.split('.');
+        if (parts.length === 3) {
+          const payloadJson = Buffer.from(parts[1], 'base64url').toString('utf8');
+          const payload = JSON.parse(payloadJson);
+          googleId = payload.sub;
+          email = payload.email;
+          name = payload.name || payload.email.split('@')[0];
+          avatar = payload.picture || null;
+        }
+      } catch (jwtErr) {
+        console.error('JWT decode error:', jwtErr);
       }
     }
 
     if (!email) return res.status(400).json({ error: 'Email is required for authentication' });
 
+    // Generate a stable unique google_id from email if not provided (avoids NULL UNIQUE constraint)
+    if (!googleId) {
+      const crypto = require('crypto');
+      googleId = 'email_' + crypto.createHash('sha256').update(email).digest('hex').slice(0, 20);
+    }
+
     if (!avatar) {
       avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name || email)}`;
     }
 
-    // Check if user exists or create new user with real Gmail avatar
+    // Check if user exists by email first
     const [existing] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
     let userId;
 
     if (existing.length > 0) {
       userId = existing[0].id;
       await pool.execute(
-        'UPDATE users SET name = ?, avatar = ?, google_id = COALESCE(?, google_id) WHERE id = ?',
+        'UPDATE users SET name = ?, avatar = ?, google_id = ? WHERE id = ?',
         [name || existing[0].name, avatar, googleId, userId]
       );
     } else {
@@ -142,7 +152,7 @@ app.post('/auth/google/callback', async (req, res) => {
     res.json({ success: true, redirect: '/profile' });
   } catch (err) {
     console.error('Google Callback Error:', err);
-    res.status(500).json({ error: 'Google Authentication failed' });
+    res.status(500).json({ error: 'Google Authentication failed: ' + (err.message || 'Unknown error') });
   }
 });
 
