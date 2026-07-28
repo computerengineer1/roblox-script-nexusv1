@@ -466,6 +466,50 @@ app.get('/admin/dashboard', requireAuth, async (req, res) => {
   });
 });
 
+// Helper to resolve any Roblox Game, Place ID, or Asset URL to real Roblox CDN Image URL
+async function resolveRobloxImageUrl(inputUrl) {
+  if (!inputUrl || !inputUrl.trim()) return null;
+  const url = inputUrl.trim();
+
+  // 1. Roblox Game Link e.g. https://www.roblox.com/games/2753915549/Blox-Fruits
+  const gameMatch = url.match(/roblox\.com\/games\/(\d+)/i);
+  if (gameMatch) {
+    try {
+      const res = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${gameMatch[1]}&size=512x512&format=Png&isCircular=false`);
+      const data = await res.json();
+      if (data && data.data && data.data[0] && data.data[0].imageUrl) {
+        return data.data[0].imageUrl;
+      }
+    } catch (e) {}
+  }
+
+  // 2. Roblox Asset / Decal / Catalog / Badge Link
+  const assetMatch = url.match(/roblox\.com\/(?:library|catalog|asset|badges)\/(\d+)/i) || url.match(/rbxassetid:\/\/(\d+)/i);
+  if (assetMatch) {
+    try {
+      const res = await fetch(`https://thumbnails.roblox.com/v1/assets?assetIds=${assetMatch[1]}&size=512x512&format=Png&isCircular=false`);
+      const data = await res.json();
+      if (data && data.data && data.data[0] && data.data[0].imageUrl) {
+        return data.data[0].imageUrl;
+      }
+    } catch (e) {}
+  }
+
+  // 3. Pure Numeric ID e.g. "2753915549"
+  if (/^\d+$/.test(url)) {
+    try {
+      const res = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${url}&size=512x512&format=Png&isCircular=false`);
+      const data = await res.json();
+      if (data && data.data && data.data[0] && data.data[0].imageUrl) {
+        return data.data[0].imageUrl;
+      }
+    } catch (e) {}
+  }
+
+  // 4. Direct Image URL (Imgur, Discord CDN, etc.)
+  return url;
+}
+
 // Admin Add Map (Protected, CSRF, File Upload)
 app.post(
   '/admin/maps/add',
@@ -484,20 +528,7 @@ app.post(
     let imagePath = null;
 
     if (image_url && image_url.trim()) {
-      const inputUrl = image_url.trim();
-
-      const rbxAssetMatch = inputUrl.match(/rbxassetid:\/\/(\d+)/i);
-      const robloxIdMatch = inputUrl.match(/roblox\.com\/(?:games|library|catalog|asset|badges)\/(\d+)/i);
-
-      if (rbxAssetMatch) {
-        imagePath = `https://www.roblox.com/asset-thumbnail/image?assetId=${rbxAssetMatch[1]}&width=768&height=432&format=png`;
-      } else if (robloxIdMatch) {
-        imagePath = `https://www.roblox.com/asset-thumbnail/image?assetId=${robloxIdMatch[1]}&width=768&height=432&format=png`;
-      } else if (/^\d+$/.test(inputUrl)) {
-        imagePath = `https://www.roblox.com/asset-thumbnail/image?assetId=${inputUrl}&width=768&height=432&format=png`;
-      } else {
-        imagePath = inputUrl;
-      }
+      imagePath = await resolveRobloxImageUrl(image_url);
     }
 
     if (!imagePath && req.file) {
