@@ -59,7 +59,11 @@ app.use(async (req, res, next) => {
   res.locals.adClientId = process.env.AD_CLIENT_ID || 'ca-pub-1234567890123456';
   res.locals.adSlotId = process.env.AD_SLOT_ID || '1234567890';
   res.locals.googleClientId = process.env.GOOGLE_CLIENT_ID || '1234567890-example.apps.googleusercontent.com';
-  res.locals.reqHeadersHost = req.headers.host || 'localhost:3000';
+  let host = req.headers.host || 'localhost:3000';
+  if (host.includes('vercel.app')) {
+    host = 'roblox-script-nexusv1.vercel.app';
+  }
+  res.locals.reqHeadersHost = host;
   res.locals.protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
 
   const userSessionId = req.cookies.user_id;
