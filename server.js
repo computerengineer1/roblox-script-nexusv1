@@ -51,7 +51,15 @@ app.use(async (req, res, next) => {
   res.locals.protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
 
   const userSessionId = req.cookies.user_id;
-  if (userSessionId) {
+  const userCookieData = req.cookies.nexus_user_session;
+
+  if (userCookieData) {
+    try {
+      res.locals.currentUser = JSON.parse(userCookieData);
+    } catch (e) {
+      res.locals.currentUser = null;
+    }
+  } else if (userSessionId) {
     try {
       const [users] = await pool.execute('SELECT * FROM users WHERE id = ?', [userSessionId]);
       res.locals.currentUser = users.length > 0 ? users[0] : null;
@@ -130,35 +138,50 @@ app.post('/auth/google/callback', async (req, res) => {
       avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name || email)}`;
     }
 
-    // Check if user exists by email first
-    const [existing] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
-    let userId;
+    let userId = Date.now();
 
-    if (existing.length > 0) {
-      userId = existing[0].id;
-      await pool.execute(
-        'UPDATE users SET name = ?, avatar = ?, google_id = ? WHERE id = ?',
-        [name || existing[0].name, avatar, googleId, userId]
-      );
-    } else {
-      const [inserted] = await pool.execute(
-        'INSERT INTO users (google_id, email, name, avatar) VALUES (?, ?, ?, ?)',
-        [googleId, email, name || 'Google User', avatar]
-      );
-      userId = inserted.insertId;
+    // Try database insertion first
+    try {
+      const [existing] = await pool.execute('SELECT * FROM users WHERE email = ?', [email]);
+
+      if (existing.length > 0) {
+        userId = existing[0].id;
+        await pool.execute(
+          'UPDATE users SET name = ?, avatar = ?, google_id = ? WHERE id = ?',
+          [name || existing[0].name, avatar, googleId, userId]
+        );
+      } else {
+        const [inserted] = await pool.execute(
+          'INSERT INTO users (google_id, email, name, avatar) VALUES (?, ?, ?, ?)',
+          [googleId, email, name || 'Google User', avatar]
+        );
+        userId = inserted.insertId;
+      }
+    } catch (dbErr) {
+      console.warn('MySQL DB unreachable, using resilient session fallback:', dbErr.message);
     }
 
+    const userData = {
+      id: userId,
+      email,
+      name: name || email.split('@')[0],
+      avatar,
+      created_at: new Date().toISOString()
+    };
+
     res.cookie('user_id', userId, { maxAge: 30 * 24 * 3600 * 1000, httpOnly: true, sameSite: 'lax' });
+    res.cookie('nexus_user_session', JSON.stringify(userData), { maxAge: 30 * 24 * 3600 * 1000, httpOnly: true, sameSite: 'lax' });
     res.json({ success: true, redirect: '/profile' });
   } catch (err) {
     console.error('Google Callback Error:', err);
-    res.status(500).json({ error: 'Google Authentication failed: ' + (err.message || 'Unknown error') });
+    res.status(500).json({ error: 'Google Authentication error: ' + (err.message || 'Unknown error') });
   }
 });
 
 // User Sign Out
 app.get('/auth/logout', (req, res) => {
   res.clearCookie('user_id');
+  res.clearCookie('nexus_user_session');
   res.redirect('/');
 });
 
