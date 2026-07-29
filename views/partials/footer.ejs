@@ -28,24 +28,15 @@
   <script src="/js/search.js"></script>
   <script src="/js/loadout.js"></script>
 
-  <!-- Automatic Pop-under Ad Trigger (Monetag / Adsterra / Direct Link) -->
-  <script>
-    document.addEventListener('click', function triggerGlobalPopunder(e) {
-      // Exclude clicks inside inputs, buttons or interactive elements to preserve UX
-      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
+  <!-- Adsterra Official Popunder Ad Script -->
+  <script src="https://pl30590575.effectivecpmnetwork.com/50/1b/bf/501bbfd965b5f39334c020af9a3253be.js"></script>
 
-      const lastPopTime = localStorage.getItem('nexus_global_pop_time');
-      const now = Date.now();
-      
-      // Cooldown of 4 hours between full screen popunders
-      if (!lastPopTime || (now - parseInt(lastPopTime, 10)) > (4 * 60 * 60 * 1000)) {
-        const adUrl = '<%= typeof adGatewayUrl !== "undefined" && adGatewayUrl ? adGatewayUrl : "https://www.google.com" %>';
-        if (adUrl && adUrl.startsWith('http')) {
-          window.open(adUrl, '_blank');
-          localStorage.setItem('nexus_global_pop_time', now);
-        }
-      }
-    });
+  <!-- Adsterra Official Social Bar Notification Ad Script -->
+  <script src="https://pl30590577.effectivecpmnetwork.com/76/a8/fb/76a8fb887a752f1942c76ef338dc2a56.js"></script>
+
+  <!-- Automatic Smartlink Ad Gateway Setup -->
+  <script>
+    window.adGatewayUrl = '<%= typeof adGatewayUrl !== "undefined" && adGatewayUrl ? adGatewayUrl : "https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49" %>';
   </script>
 </body>
 </html>

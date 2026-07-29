@@ -85,7 +85,7 @@ app.use(async (req, res, next) => {
   } else {
     res.locals.currentUser = null;
   }
-  res.locals.adGatewayUrl = process.env.AD_GATEWAY_URL || 'https://www.google.com';
+  res.locals.adGatewayUrl = process.env.AD_GATEWAY_URL || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
   next();
 });
 

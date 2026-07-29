@@ -1,31 +1,98 @@
 <% 
-  const adClient = typeof adClientId !== 'undefined' && adClientId ? adClientId : 'ca-pub-1234567890123456';
-  const adSlot = typeof adSlotId !== 'undefined' && adSlotId ? adSlotId : '1234567890';
   const position = typeof pos !== 'undefined' ? pos : 'banner';
 %>
 
-<div class="adsense-container text-center my-4 p-3 glass-card rounded-3 border-purple">
+<div class="adsense-container text-center my-4 p-2 glass-card rounded-3 border-purple overflow-hidden">
   <small class="text-uppercase text-secondary tracking-wide d-block mb-2 font-orbitron" style="font-size: 0.75rem;">
-    <i class="fa-solid fa-rectangle-ad text-cyan me-1"></i> ADVERTISEMENT
+    <i class="fa-solid fa-rectangle-ad text-cyan me-1"></i> SPONSOR ADVERTISEMENT
   </small>
-  
-  <% if (process.env.NODE_ENV === 'production' && adClient && adClient !== 'ca-pub-1234567890123456') { %>
-    <!-- Google AdSense Live Code -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=<%= adClient %>" crossorigin="anonymous"></script>
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="<%= adClient %>"
-         data-ad-slot="<%= adSlot %>"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
-  <% } else { %>
-    <!-- AdSense Development Placeholder Unit -->
-    <div class="ad-placeholder p-4 bg-dark-gradient rounded border border-secondary border-dashed">
-      <p class="mb-1 text-cyan font-orbitron fw-bold"><i class="fa-solid fa-gem me-2"></i>FREE ROBLOX SCRIPTS SPONSOR</p>
-      <p class="text-secondary small mb-0">Google AdSense Unit (<%= position %>) — Client: <%= adClient %></p>
-    </div>
-  <% } %>
+
+  <div class="d-flex justify-content-center align-items-center overflow-x-auto py-1">
+    <% if (position.includes('Sidebar') || position.includes('300x250')) { %>
+      <!-- Banner 300x250 Medium Rectangle -->
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '1e969c012123bdc9f7f6533533baa900',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/1e969c012123bdc9f7f6533533baa900/invoke.js"></script>
+
+    <% } else if (position.includes('Skyscraper') || position.includes('160x600')) { %>
+      <!-- Banner 160x600 Skyscraper -->
+      <script type="text/javascript">
+        atOptions = {
+          'key' : 'cbb449acd6992e4bad5db6802669ca79',
+          'format' : 'iframe',
+          'height' : 600,
+          'width' : 160,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/cbb449acd6992e4bad5db6802669ca79/invoke.js"></script>
+
+    <% } else if (position.includes('Native')) { %>
+      <!-- Native Banner Unit -->
+      <script async="async" data-cfasync="false" src="https://pl30590578.effectivecpmnetwork.com/f64e65eea469c0db133f533f3079a62a/invoke.js"></script>
+      <div id="container-f64e65eea469c0db133f533f3079a62a"></div>
+
+    <% } else if (position.includes('Mobile') || position.includes('320x50')) { %>
+      <!-- Mobile Banner 320x50 -->
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '19e4c819e586073d4f33991192a0988e',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/19e4c819e586073d4f33991192a0988e/invoke.js"></script>
+
+    <% } else if (position.includes('468x60')) { %>
+      <!-- Banner 468x60 -->
+      <script type="text/javascript">
+        atOptions = {
+          'key' : '8553d8691c084d285ba43889210544d0',
+          'format' : 'iframe',
+          'height' : 60,
+          'width' : 468,
+          'params' : {}
+        };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/8553d8691c084d285ba43889210544d0/invoke.js"></script>
+
+    <% } else { %>
+      <!-- Leaderboard 728x90 Banner (Default) -->
+      <div class="d-none d-md-block">
+        <script type="text/javascript">
+          atOptions = {
+            'key' : 'cfebd07d14ba9157b75ff2f4da192ee0',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/cfebd07d14ba9157b75ff2f4da192ee0/invoke.js"></script>
+      </div>
+
+      <div class="d-block d-md-none">
+        <!-- Mobile Fallback 320x50 for smaller screens -->
+        <script type="text/javascript">
+          atOptions = {
+            'key' : '19e4c819e586073d4f33991192a0988e',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+          };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/19e4c819e586073d4f33991192a0988e/invoke.js"></script>
+      </div>
+    <% } %>
+  </div>
 </div>
