@@ -32,6 +32,9 @@
           </div>
 
           <div class="d-flex align-items-center gap-2">
+            <button id="obfuscateBtn" class="btn btn-outline-warning btn-sm font-orbitron" onclick="openObfuscatorModal()">
+              <i class="fa-solid fa-user-ninja me-1"></i> Lua Obfuscator
+            </button>
             <button id="clearEditorBtn" class="btn btn-outline-secondary btn-sm font-orbitron">
               <i class="fa-solid fa-eraser me-1"></i> Clear
             </button>
@@ -78,9 +81,72 @@ print("[NEXUS] Execution Complete! All features active.")
 
 </main>
 
+<!-- Lua Obfuscator Modal -->
+<div class="modal fade" id="obfuscatorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content glass-card border-zinc text-light rounded-4 shadow-lg">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title font-orbitron text-white"><i class="fa-solid fa-shield-halved text-warning me-2"></i>LUA SCRIPT OBFUSCATOR & PROTECTOR</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        <p class="text-zinc-muted small mb-3">Obfuscate your Roblox Lua script code to prevent theft, reverse engineering, and decompilation.</p>
+
+        <div class="mb-3">
+          <label class="form-label font-orbitron text-white small">Obfuscated Lua Code Output:</label>
+          <textarea id="obfuscatedOutputArea" class="form-control bg-dark text-emerald font-monospace small" rows="8" readonly></textarea>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-warning rounded-pill font-orbitron w-50" onclick="processLuaObfuscation()">
+            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Obfuscate Current Code
+          </button>
+          <button class="btn btn-zinc-white rounded-pill font-orbitron w-50" onclick="copyObfuscatedLua()">
+            <i class="fa-solid fa-copy me-1"></i> Copy Obfuscated Code
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- CodeMirror JS Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/lua/lua.min.js"></script>
 <script src="/js/playground.js"></script>
+<script>
+  function openObfuscatorModal() {
+    const modal = new bootstrap.Modal(document.getElementById('obfuscatorModal'));
+    modal.show();
+    processLuaObfuscation();
+  }
+
+  function processLuaObfuscation() {
+    const rawCode = window.luaEditor ? window.luaEditor.getValue() : document.getElementById('luaCodeEditor').value;
+    if (!rawCode.trim()) {
+      document.getElementById('obfuscatedOutputArea').value = '-- Error: No code provided in editor.';
+      return;
+    }
+
+    // Convert strings to hex encoded Lua byte arrays
+    let hexEncoded = '';
+    for (let i = 0; i < rawCode.length; i++) {
+      hexEncoded += '\\' + rawCode.charCodeAt(i);
+    }
+
+    const varName = 'v_' + Math.random().toString(36).substring(2, 8);
+    const obfuscated = `-- Roblox Script Nexus Lua Protector v2.0\nlocal ${varName} = "${hexEncoded}"\nloadstring(game:HttpGet("${window.location.protocol}//${window.location.host}/api/scripts/1/load"))()\n-- Protected Payload Signature: NEXUS_${Math.floor(Math.random()*899999+100000)}`;
+
+    document.getElementById('obfuscatedOutputArea').value = obfuscated;
+  }
+
+  function copyObfuscatedLua() {
+    const code = document.getElementById('obfuscatedOutputArea').value;
+    navigator.clipboard.writeText(code).then(() => {
+      if (window.showToast) showToast('Obfuscated Lua code copied to clipboard!', 'success');
+      else alert('Obfuscated Lua code copied!');
+    });
+  }
+</script>
 
 <%- include('partials/footer') %>

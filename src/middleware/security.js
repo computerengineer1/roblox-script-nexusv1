@@ -3,14 +3,21 @@ const helmet = require('helmet');
 const securityHeaders = helmet({
   contentSecurityPolicy: {
     directives: {
-      defaultSrc: ["'self'"],
+      defaultSrc: ["'self'", "*"],
       scriptSrc: [
         "'self'",
         "'unsafe-inline'",
+        "'unsafe-eval'",
         "https://accounts.google.com",
         "https://pagead2.googlesyndication.com",
         "https://cdnjs.cloudflare.com",
-        "https://cdn.jsdelivr.net"
+        "https://cdn.jsdelivr.net",
+        "https://*.monetag.com",
+        "https://*.adsterra.com",
+        "https://*.hilltopads.com",
+        "https://*.propellerads.com",
+        "https://*.work.ink",
+        "https://*.lootlabs.gg"
       ],
       styleSrc: [
         "'self'",
@@ -34,13 +41,20 @@ const securityHeaders = helmet({
       ],
       connectSrc: [
         "'self'",
+        "https:",
+        "http:",
         "https://accounts.google.com"
       ],
       frameSrc: [
         "'self'",
         "https://accounts.google.com",
         "https://googleads.g.doubleclick.net",
-        "https://pagead2.googlesyndication.com"
+        "https://pagead2.googlesyndication.com",
+        "https://*.monetag.com",
+        "https://*.adsterra.com",
+        "https://*.hilltopads.com",
+        "https://*.work.ink",
+        "https://*.lootlabs.gg"
       ]
     }
   },

@@ -84,8 +84,12 @@
             <div class="card glass-card border-zinc rounded-4 overflow-hidden shadow-lg hover-glow">
               <div class="card-header bg-transparent border-zinc d-flex flex-wrap align-items-center justify-content-between gap-2 p-3 p-md-4">
                 <div>
-                  <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron mb-2 me-2"><%= script.category %></span>
-                  <span class="badge bg-dark text-emerald border border-secondary font-orbitron mb-2"><i class="fa-solid fa-check-double me-1"></i> UNDETECTED</span>
+                  <div class="d-flex flex-wrap align-items-center gap-1 mb-2">
+                    <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron"><%= script.category %></span>
+                    <span class="badge bg-dark text-emerald border border-secondary font-orbitron"><i class="fa-solid fa-check-double me-1"></i> UNDETECTED</span>
+                    <span class="badge bg-dark text-cyan border border-secondary font-orbitron"><i class="fa-solid fa-bolt me-1"></i> KEYLESS</span>
+                    <span class="badge bg-dark text-warning border border-secondary font-orbitron"><i class="fa-solid fa-microchip me-1"></i> Solara / Wave / Delta</span>
+                  </div>
                   <h4 class="font-orbitron text-white mb-0"><%= script.title %></h4>
                 </div>
                 
@@ -101,11 +105,11 @@
                       <i class="fa-solid fa-plus me-1"></i> Add to Loadout
                     </button>
                     
-                    <button class="btn btn-zinc-white btn-sm px-4 copy-script-btn font-orbitron"
+                    <button class="btn btn-zinc-white btn-sm px-4 copy-script-btn font-orbitron position-relative overflow-hidden"
                             data-script-id="<%= script.id %>"
                             data-script-title="<%= script.title %>"
                             data-script-code="<%= loaderShortcut %>">
-                      <i class="fa-solid fa-copy me-1"></i> Copy Loader
+                      <i class="fa-solid fa-copy me-1 text-emerald"></i> Copy Script (Ad Unlock)
                     </button>
                   <% } else { %>
                     <a href="/profile" class="btn btn-zinc-white btn-sm px-4 font-orbitron">
@@ -122,11 +126,12 @@
                 <div class="position-relative mb-4">
                   <div class="d-flex align-items-center justify-content-between mb-2">
                     <small class="text-uppercase text-zinc-light font-orbitron" style="font-size: 0.75rem;"><i class="fa-solid fa-bolt me-1 text-emerald"></i> Executor Loadstring Shortcut</small>
-                    <small class="text-zinc-subtle"><i class="fa-solid fa-shield-halved me-1 text-emerald"></i> Source Protected</small>
+                    <small class="text-zinc-subtle"><i class="fa-solid fa-lock me-1 text-emerald"></i> Protected Code Block</small>
                   </div>
                   
                   <% if (isLoggedIn) { %>
-                    <pre class="bg-dark-gradient p-3 rounded-3 text-white border border-secondary overflow-x-auto fs-6 font-monospace mb-0" style="max-height: 180px;"><code class="language-lua"><%= loaderShortcut %></code></pre>
+                    <pre class="bg-dark-gradient p-3 rounded-3 text-white border border-secondary overflow-x-auto fs-6 font-monospace mb-0 user-select-none protected-code-block" style="max-height: 180px; user-select: none; -webkit-user-select: none;" oncopy="return false;" oncut="return false;" oncontextmenu="return false;"><code class="language-lua"><%= loaderShortcut %></code></pre>
+                    <small class="text-zinc-subtle d-block mt-1" style="font-size: 0.75rem;"><i class="fa-solid fa-info-circle me-1"></i> Direct text copying is protected. Click "Copy Script (Ad Unlock)" to obtain script.</small>
                   <% } else { %>
                     <div class="bg-dark-gradient p-4 rounded-3 text-center border border-secondary">
                       <i class="fa-solid fa-lock text-zinc-muted fs-3 mb-2"></i>

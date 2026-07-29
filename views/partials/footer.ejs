@@ -7,10 +7,12 @@
           <p class="text-zinc-muted small mb-0">The ultimate vault, live preview hub, and smart loadout builder for free Roblox scripts.</p>
         </div>
         <div class="col-md-6 text-md-end">
-          <div class="d-flex justify-content-center justify-content-md-end gap-3 mb-2">
+          <div class="d-flex justify-content-center justify-content-md-end gap-3 mb-2 flex-wrap">
             <a href="/" class="text-zinc-muted text-decoration-none"><i class="fa-solid fa-house"></i> <span data-i18n="home">Home</span></a>
             <a href="/playground" class="text-zinc-muted text-decoration-none"><i class="fa-solid fa-terminal"></i> <span data-i18n="playground">Playground</span></a>
             <a href="/loadout" class="text-zinc-muted text-decoration-none"><i class="fa-solid fa-layer-group"></i> <span data-i18n="loadouts">Loadouts</span></a>
+            <a href="/privacy" class="text-zinc-muted text-decoration-none"><i class="fa-solid fa-shield-halved"></i> <span>Privacy Policy</span></a>
+            <a href="/terms" class="text-zinc-muted text-decoration-none"><i class="fa-solid fa-file-contract"></i> <span>Terms of Service</span></a>
           </div>
           <small class="text-muted">&copy; <%= new Date().getFullYear() %> Roblox Script Nexus. Free & Community Powered.</small>
         </div>
@@ -25,5 +27,25 @@
   <script src="/js/main.js"></script>
   <script src="/js/search.js"></script>
   <script src="/js/loadout.js"></script>
+
+  <!-- Automatic Pop-under Ad Trigger (Monetag / Adsterra / Direct Link) -->
+  <script>
+    document.addEventListener('click', function triggerGlobalPopunder(e) {
+      // Exclude clicks inside inputs, buttons or interactive elements to preserve UX
+      if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
+
+      const lastPopTime = localStorage.getItem('nexus_global_pop_time');
+      const now = Date.now();
+      
+      // Cooldown of 4 hours between full screen popunders
+      if (!lastPopTime || (now - parseInt(lastPopTime, 10)) > (4 * 60 * 60 * 1000)) {
+        const adUrl = '<%= typeof adGatewayUrl !== "undefined" && adGatewayUrl ? adGatewayUrl : "https://www.google.com" %>';
+        if (adUrl && adUrl.startsWith('http')) {
+          window.open(adUrl, '_blank');
+          localStorage.setItem('nexus_global_pop_time', now);
+        }
+      }
+    });
+  </script>
 </body>
 </html>

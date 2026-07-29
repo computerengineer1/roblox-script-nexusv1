@@ -85,7 +85,54 @@ app.use(async (req, res, next) => {
   } else {
     res.locals.currentUser = null;
   }
+  res.locals.adGatewayUrl = process.env.AD_GATEWAY_URL || 'https://www.google.com';
   next();
+});
+
+// Dynamic Sitemap.xml Generator for Search Engines
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const maps = await getMaps();
+    const baseUrl = `${res.locals.protocol}://${res.locals.reqHeadersHost}`;
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemap.org/schemas/sitemap/0.9">\n`;
+    
+    // Static Routes
+    const staticPages = ['', '/playground', '/loadout', '/privacy', '/terms', '/profile'];
+    staticPages.forEach(page => {
+      xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <changefreq>daily</changefreq>\n    <priority>${page === '' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
+    });
+    
+    // Dynamic Map Pages
+    maps.forEach(map => {
+      xml += `  <url>\n    <loc>${baseUrl}/map/${map.id}</loc>\n    <changefreq>always</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
+    });
+    
+    xml += `</urlset>`;
+    
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.send(xml);
+  } catch (err) {
+    res.status(500).send('Sitemap generation error');
+  }
+});
+
+// Search Engine Crawling Rules (robots.txt)
+app.get('/robots.txt', (req, res) => {
+  const baseUrl = `${res.locals.protocol}://${res.locals.reqHeadersHost}`;
+  const robots = `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api/\nSitemap: ${baseUrl}/sitemap.xml\n`;
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.send(robots);
+});
+
+// Legal Pages (Privacy Policy & Terms of Service)
+app.get('/privacy', (req, res) => {
+  res.render('privacy');
+});
+
+app.get('/terms', (req, res) => {
+  res.render('terms');
 });
 
 // ==========================================================================
@@ -576,7 +623,39 @@ app.post(
     }
 
     try {
-      await addScript({ map_id, title, category, code, description });
+      const insertedScript = await addScript({ map_id, title, category, code, description });
+
+      // Optional Discord Webhook Notification Trigger
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (webhookUrl && webhookUrl.startsWith('http')) {
+        try {
+          const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+          const map = await getMapById(map_id);
+          const mapName = map ? map.name : 'Roblox Game';
+          const payload = {
+            embeds: [{
+              title: `🚀 NEW SCRIPT PUBLISHED: ${title}`,
+              description: description || 'New free Roblox script loadstring released on Roblox Script Nexus!',
+              color: 65280, // Emerald Green
+              fields: [
+                { name: 'Game Map', value: mapName, inline: true },
+                { name: 'Category', value: category || 'General', inline: true },
+                { name: 'Status', value: '🟢 UNDETECTED | ⚡ KEYLESS', inline: true }
+              ],
+              footer: { text: 'Roblox Script Nexus • Free Vault' },
+              timestamp: new Date().toISOString()
+            }]
+          };
+          fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          }).catch(e => console.warn('Discord Webhook error:', e.message));
+        } catch (e) {
+          console.warn('Discord notify error:', e.message);
+        }
+      }
+
       res.redirect('/admin/dashboard?success=Script+published+successfully');
     } catch (err) {
       console.error('Add script error:', err);
