@@ -337,6 +337,19 @@ end)
 print("[NEXUS] Brookhaven Vehicle Fly Loaded")`
           }
         ]
+      },
+      {
+        name: 'Rivals',
+        image: 'https://www.roblox.com/asset-thumbnail/image?assetId=17625359962&width=768&height=432&format=png',
+        description: 'Ultimate FPS Arena Game. Features ENI Rivals Hub v6.0 Pro Aimbot, Silent Aim, ESP, and Recoil Control.',
+        scripts: [
+          {
+            title: 'ENI RIVALS ULTIMATE HUB v6.0 PRO',
+            category: 'Combat',
+            description: 'Ultimate precision aimbot, smooth camera tracking, movement prediction, and full player ESP for Rivals.',
+            code: require('./src/utils/dataStore').RIVALS_LUA_CODE
+          }
+        ]
       }
     ];
 
