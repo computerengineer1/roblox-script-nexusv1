@@ -19,6 +19,7 @@ const poolConfig = {
   database: dbName,
   waitForConnections: true,
   connectionLimit: 10,
+  connectTimeout: 3000,
   queueLimit: 0,
   dateStrings: true
 };

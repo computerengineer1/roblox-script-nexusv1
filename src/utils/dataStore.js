@@ -665,8 +665,25 @@ OrionLib:Init()`,
 let nextMapId = 6;
 let nextScriptId = 42;
 
+// Fast RAM Caching Store (60s TTL for instant <5ms responses)
+let cacheGetMaps = { data: null, time: 0 };
+let cacheScriptsByMap = {};
+let cacheGetAllScripts = { data: null, time: 0 };
+
+function clearDataStoreCache() {
+  cacheGetMaps = { data: null, time: 0 };
+  cacheScriptsByMap = {};
+  cacheGetAllScripts = { data: null, time: 0 };
+}
+
 // Resilient Map Queries
 async function getMaps() {
+  const now = Date.now();
+  if (cacheGetMaps.data && (now - cacheGetMaps.time) < 60000) {
+    return cacheGetMaps.data;
+  }
+
+  let resultMaps = [];
   try {
     const [rows] = await pool.execute(`
       SELECT m.*, COUNT(s.id) AS script_count
@@ -675,17 +692,27 @@ async function getMaps() {
       GROUP BY m.id
       ORDER BY m.created_at DESC
     `);
-    if (rows && rows.length > 0) return rows;
+    if (rows && rows.length > 0) resultMaps = rows;
   } catch (err) {
     console.warn('DB getMaps fallback:', err.message);
   }
-  return memoryMaps.map(m => ({
-    ...m,
-    script_count: memoryScripts.filter(s => s.map_id === m.id).length
-  }));
+
+  if (!resultMaps || resultMaps.length === 0) {
+    resultMaps = memoryMaps.map(m => ({
+      ...m,
+      script_count: memoryScripts.filter(s => s.map_id === m.id).length
+    }));
+  }
+
+  cacheGetMaps = { data: resultMaps, time: now };
+  return resultMaps;
 }
 
 async function getMapById(id) {
+  const maps = await getMaps();
+  const found = maps.find(m => m.id === parseInt(id, 10));
+  if (found) return found;
+
   try {
     const [rows] = await pool.execute('SELECT * FROM maps WHERE id = ?', [id]);
     if (rows && rows.length > 0) return rows[0];
@@ -696,6 +723,7 @@ async function getMapById(id) {
 }
 
 async function addMap({ name, image, description }) {
+  clearDataStoreCache();
   try {
     const [result] = await pool.execute(
       'INSERT INTO maps (name, image, description) VALUES (?, ?, ?)',
@@ -717,6 +745,7 @@ async function addMap({ name, image, description }) {
 }
 
 async function deleteMap(id) {
+  clearDataStoreCache();
   try {
     await pool.execute('DELETE FROM maps WHERE id = ?', [id]);
   } catch (err) {
@@ -729,6 +758,13 @@ async function deleteMap(id) {
 
 // Resilient Script Queries
 async function getScriptsByMapId(mapId) {
+  const mId = parseInt(mapId, 10);
+  const now = Date.now();
+  if (cacheScriptsByMap[mId] && (now - cacheScriptsByMap[mId].time) < 60000) {
+    return cacheScriptsByMap[mId].data;
+  }
+
+  let resultScripts = [];
   try {
     const [rows] = await pool.execute(
       `SELECT s.*,
@@ -736,16 +772,28 @@ async function getScriptsByMapId(mapId) {
        FROM scripts s
        WHERE s.map_id = ?
        ORDER BY s.created_at DESC`,
-      [mapId]
+      [mId]
     );
-    if (rows && rows.length > 0) return rows;
+    if (rows && rows.length > 0) resultScripts = rows;
   } catch (err) {
     console.warn('DB getScriptsByMapId fallback:', err.message);
   }
-  return memoryScripts.filter(s => s.map_id === parseInt(mapId, 10));
+
+  if (!resultScripts || resultScripts.length === 0) {
+    resultScripts = memoryScripts.filter(s => s.map_id === mId);
+  }
+
+  cacheScriptsByMap[mId] = { data: resultScripts, time: now };
+  return resultScripts;
 }
 
 async function getAllScripts() {
+  const now = Date.now();
+  if (cacheGetAllScripts.data && (now - cacheGetAllScripts.time) < 60000) {
+    return cacheGetAllScripts.data;
+  }
+
+  let resultScripts = [];
   try {
     const [rows] = await pool.execute(`
       SELECT s.*, m.name AS map_name
@@ -753,14 +801,20 @@ async function getAllScripts() {
       JOIN maps m ON s.map_id = m.id
       ORDER BY s.created_at DESC
     `);
-    if (rows && rows.length > 0) return rows;
+    if (rows && rows.length > 0) resultScripts = rows;
   } catch (err) {
     console.warn('DB getAllScripts fallback:', err.message);
   }
-  return memoryScripts.map(s => {
-    const map = memoryMaps.find(m => m.id === s.map_id);
-    return { ...s, map_name: map ? map.name : 'Game Map' };
-  });
+
+  if (!resultScripts || resultScripts.length === 0) {
+    resultScripts = memoryScripts.map(s => {
+      const map = memoryMaps.find(m => m.id === s.map_id);
+      return { ...s, map_name: map ? map.name : 'Game Map' };
+    });
+  }
+
+  cacheGetAllScripts = { data: resultScripts, time: now };
+  return resultScripts;
 }
 
 async function getScriptCodeById(scriptId) {
@@ -785,6 +839,7 @@ async function getScriptCodeById(scriptId) {
 }
 
 async function addScript({ map_id, title, category, code, description }) {
+  clearDataStoreCache();
   try {
     const [result] = await pool.execute(
       'INSERT INTO scripts (map_id, title, category, code, description) VALUES (?, ?, ?, ?, ?)',
@@ -809,6 +864,7 @@ async function addScript({ map_id, title, category, code, description }) {
 }
 
 async function deleteScript(id) {
+  clearDataStoreCache();
   try {
     await pool.execute('DELETE FROM scripts WHERE id = ?', [id]);
   } catch (err) {
