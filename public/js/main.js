@@ -6,16 +6,7 @@ window.triggerGetDailyKey = function triggerGetDailyKey() {
   }
   try {
     var adUrl = window.adGatewayUrl || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
-    var adWin = window.open(adUrl, '_blank');
-    if (!adWin) {
-      var a = document.createElement('a');
-      a.href = adUrl;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
+    window.open(adUrl, '_blank');
   } catch(e) {
     console.warn('Ad gateway open error:', e);
   }
@@ -77,7 +68,7 @@ function initAntiAdBlockDetector() {
     if (isBlocked) {
       showAntiAdBlockModal();
     }
-  }, 400);
+  }, 600);
 }
 
 function showAntiAdBlockModal() {
@@ -89,6 +80,7 @@ function showAntiAdBlockModal() {
 
   modal.innerHTML = `
     <div class="glass-card border-purple rounded-4 p-4 p-md-5 max-w-600 text-center shadow-lg animate-fade-in position-relative">
+      <div style="position:absolute; top:15px; right:20px; cursor:pointer; color:#aaa; font-size:24px; font-weight:bold;" onclick="document.getElementById('antiAdBlockModal').remove(); document.body.style.overflow='auto';">&times;</div>
       <div class="bg-dark p-3 rounded-circle border border-secondary d-inline-block mb-3">
         <i class="fa-solid fa-shield-halved text-rose fs-1"></i>
       </div>
@@ -102,13 +94,18 @@ function showAntiAdBlockModal() {
         <ol class="mb-0 ps-3 text-zinc-muted">
           <li class="mb-1">Click the <strong>AdBlocker / Lion Shield icon</strong> in your browser address bar.</li>
           <li class="mb-1">Select <strong>"Turn off Shields"</strong> or <strong>"Pause on this site"</strong>.</li>
-          <li>Click the <strong>"I Have Disabled AdBlocker"</strong> button below to refresh.</li>
+          <li>Click the <strong>"Continue / Refresh"</strong> button below to update.</li>
         </ol>
       </div>
 
-      <button onclick="window.location.reload()" class="btn btn-emerald text-dark w-100 rounded-pill font-orbitron fw-bold py-3 shadow-cyan">
-        <i class="fa-solid fa-rotate-right me-2"></i> I HAVE DISABLED ADBLOCKER (REFRESH)
-      </button>
+      <div class="d-flex gap-2">
+        <button onclick="window.location.reload()" class="btn btn-emerald text-dark flex-grow-1 rounded-pill font-orbitron fw-bold py-3 shadow-cyan">
+          <i class="fa-solid fa-rotate-right me-2"></i> REFRESH PAGE
+        </button>
+        <button onclick="document.getElementById('antiAdBlockModal').remove(); document.body.style.overflow='auto';" class="btn btn-outline-secondary rounded-pill px-4 font-orbitron text-white">
+          DISMISS
+        </button>
+      </div>
     </div>
   `;
 
