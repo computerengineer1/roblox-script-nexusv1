@@ -306,6 +306,11 @@ app.get('/subscribe/:mapId', (req, res) => {
   res.redirect(req.get('referer') || `/map/${mapId}`);
 });
 
+// Dedicated Get Key page (redirects to homepage with auto-trigger)
+app.get('/key', (req, res) => {
+  res.redirect('/#getkey');
+});
+
 // ==========================================================================
 // AJAX API ENDPOINTS
 // ==========================================================================

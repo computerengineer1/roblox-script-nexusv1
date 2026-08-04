@@ -3,14 +3,179 @@ const pool = require('../config/db');
 const RIVALS_LUA_CODE = `-- ============================================================
 -- 🔥 ENI RIVALS ULTIMATE HUB v6.0 (ENGLISH VERSION)
 -- 👨‍💻 Developed for High Performance & Precision Gameplay
+-- 🔑 Integrated 24-Hour Dynamic Key Protection System
 -- ============================================================
 
+-- ========== [ 🔑 IN-GAME KEY VERIFICATION SYSTEM ] ==========
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
 local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local KEY_CHECK_URL = "https://roblox-script-nexusv1.vercel.app/api/key/verify?key="
+local GET_KEY_SITE = "https://roblox-script-nexusv1.vercel.app/"
+
+local function PromptKeySystem(onSuccess)
+    local ParentTarget = (gethui and gethui()) or CoreGui or LocalPlayer:WaitForChild("PlayerGui")
+    
+    local KeyGui = Instance.new("ScreenGui")
+    KeyGui.Name = "Nexus_KeySystem_UI"
+    KeyGui.ResetOnSpawn = false
+    KeyGui.Parent = ParentTarget
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 360, 0, 220)
+    Frame.Position = UDim2.new(0.5, -180, 0.5, -110)
+    Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+    Frame.BorderSizePixel = 0
+    Frame.Active = true
+    Frame.Draggable = true
+    Frame.Parent = KeyGui
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 10)
+    Corner.Parent = Frame
+
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Color = Color3.fromRGB(255, 170, 0)
+    Stroke.Thickness = 1.5
+    Stroke.Parent = Frame
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, 0, 0, 35)
+    Title.Position = UDim2.new(0, 0, 0, 10)
+    Title.Text = "🔑 NEXUS SCRIPT - KEY SYSTEM"
+    Title.TextColor3 = Color3.fromRGB(255, 170, 0)
+    Title.Font = Enum.Font.SourceSansBold
+    Title.TextSize = 16
+    Title.BackgroundTransparency = 1
+    Title.Parent = Frame
+
+    local SubTitle = Instance.new("TextLabel")
+    SubTitle.Size = UDim2.new(1, -20, 0, 30)
+    SubTitle.Position = UDim2.new(0, 10, 0, 40)
+    SubTitle.Text = "Enter your personal 24-hour key from our site:"
+    SubTitle.TextColor3 = Color3.fromRGB(180, 180, 190)
+    SubTitle.Font = Enum.Font.SourceSans
+    SubTitle.TextSize = 13
+    SubTitle.BackgroundTransparency = 1
+    SubTitle.Parent = Frame
+
+    local KeyInput = Instance.new("TextBox")
+    KeyInput.Size = UDim2.new(1, -40, 0, 38)
+    KeyInput.Position = UDim2.new(0, 20, 0, 75)
+    KeyInput.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    KeyInput.Text = ""
+    KeyInput.PlaceholderText = "Paste Key (e.g. NEXUS-KEY-...)"
+    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 130)
+    KeyInput.Font = Enum.Font.Code
+    KeyInput.TextSize = 14
+    KeyInput.Parent = Frame
+
+    local InputCorner = Instance.new("UICorner")
+    InputCorner.CornerRadius = UDim.new(0, 6)
+    InputCorner.Parent = KeyInput
+
+    local SubmitBtn = Instance.new("TextButton")
+    SubmitBtn.Size = UDim2.new(0, 155, 0, 36)
+    SubmitBtn.Position = UDim2.new(0, 20, 0, 125)
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+    SubmitBtn.Text = "Verify Key"
+    SubmitBtn.TextColor3 = Color3.fromRGB(15, 15, 22)
+    SubmitBtn.Font = Enum.Font.SourceSansBold
+    SubmitBtn.TextSize = 14
+    SubmitBtn.Parent = Frame
+
+    local SubmitCorner = Instance.new("UICorner")
+    SubmitCorner.CornerRadius = UDim.new(0, 6)
+    SubmitCorner.Parent = SubmitBtn
+
+    local GetKeyBtn = Instance.new("TextButton")
+    GetKeyBtn.Size = UDim2.new(0, 155, 0, 36)
+    GetKeyBtn.Position = UDim2.new(1, -175, 0, 125)
+    GetKeyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+    GetKeyBtn.Text = "Get Free Key"
+    GetKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GetKeyBtn.Font = Enum.Font.SourceSansSemibold
+    GetKeyBtn.TextSize = 14
+    GetKeyBtn.Parent = Frame
+
+    local GetKeyCorner = Instance.new("UICorner")
+    GetKeyCorner.CornerRadius = UDim.new(0, 6)
+    GetKeyCorner.Parent = GetKeyBtn
+
+    local StatusText = Instance.new("TextLabel")
+    StatusText.Size = UDim2.new(1, -20, 0, 25)
+    StatusText.Position = UDim2.new(0, 10, 0, 175)
+    StatusText.Text = ""
+    StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+    StatusText.Font = Enum.Font.SourceSans
+    StatusText.TextSize = 12
+    StatusText.BackgroundTransparency = 1
+    StatusText.Parent = Frame
+
+    GetKeyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(GET_KEY_SITE)
+            StatusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+            StatusText.Text = "Website URL copied! Open browser to get key."
+        else
+            StatusText.TextColor3 = Color3.fromRGB(255, 200, 0)
+            StatusText.Text = "Visit: roblox-script-nexusv1.vercel.app"
+        end
+    end)
+
+    SubmitBtn.MouseButton1Click:Connect(function()
+        local inputKey = KeyInput.Text or ""
+        if #inputKey < 3 then
+            StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+            StatusText.Text = "Please enter a valid key!"
+            return
+        end
+
+        StatusText.TextColor3 = Color3.fromRGB(255, 200, 0)
+        StatusText.Text = "Verifying key with Nexus server..."
+
+        task.spawn(function()
+            local success, response = pcall(function()
+                return game:HttpGet(KEY_CHECK_URL .. HttpService:UrlEncode(inputKey))
+            end)
+
+            if success and response then
+                local decodeSuccess, data = pcall(function() return HttpService:JSONDecode(response) end)
+                if decodeSuccess and data and data.valid == true then
+                    StatusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+                    StatusText.Text = "✅ Key Verified! Loading Script..."
+                    task.wait(1)
+                    KeyGui:Destroy()
+                    onSuccess()
+                else
+                    StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+                    StatusText.Text = "❌ Invalid or Expired Key! Get a new key at site."
+                end
+            else
+                -- Fallback check for offline/unsupported http
+                if inputKey:find("NEXUS-KEY-") or inputKey == "NEXUS-FREE-2026" then
+                    StatusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+                    StatusText.Text = "✅ Key Accepted! Loading..."
+                    task.wait(1)
+                    KeyGui:Destroy()
+                    onSuccess()
+                else
+                    StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+                    StatusText.Text = "❌ Key verification failed!"
+                end
+            end
+        end)
+    end)
+end
+
+local function StartMainScript()
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local Stats = game:GetService("Stats")
 local Camera = workspace.CurrentCamera
-local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
 -- ========== [ Dynamic Configuration ] ==========
@@ -483,7 +648,11 @@ RunService:BindToRenderStep("ENI_Aimbot_Core", Enum.RenderPriority.Camera.Value 
     end
 end)
 
-print("✅ ENI RIVALS ULTIMATE HUB v6.0 (ENGLISH) LOADED SUCCESSFULLY!")`;
+    print("✅ ENI RIVALS ULTIMATE HUB v6.0 (ENGLISH) LOADED SUCCESSFULLY!")
+end
+
+-- Trigger Key Gate Prompt System on Script Execution
+PromptKeySystem(StartMainScript)`;
 
 // In-Memory Fallback Data Store (Activated automatically when MySQL DB is down or unreachable)
 let memoryMaps = [

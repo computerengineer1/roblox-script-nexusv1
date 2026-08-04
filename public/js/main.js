@@ -2,10 +2,19 @@
  * Roblox Script Nexus - Main Client JS
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
   updateLoadoutBadge();
   initCopyAdGateway();
   initAntiAdBlockDetector();
+
+  // Auto-trigger key modal if user arrived via /key redirect
+  if (window.location.hash === '#getkey') {
+    setTimeout(function() {
+      if (typeof window.triggerGetDailyKey === 'function') {
+        window.triggerGetDailyKey();
+      }
+    }, 500);
+  }
 });
 
 // Updates the navigation badge with saved scripts count from LocalStorage
