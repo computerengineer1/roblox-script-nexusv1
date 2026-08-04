@@ -1,6 +1,26 @@
-/**
- * Roblox Script Nexus - Main Client JS
- */
+// Define triggerGetDailyKey globally on window before any DOM events
+window.triggerGetDailyKey = function triggerGetDailyKey() {
+  if (!window.currentUser) {
+    showLoginRequiredModal();
+    return;
+  }
+  try {
+    var adUrl = window.adGatewayUrl || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
+    var adWin = window.open(adUrl, '_blank');
+    if (!adWin) {
+      var a = document.createElement('a');
+      a.href = adUrl;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  } catch(e) {
+    console.warn('Ad gateway open error:', e);
+  }
+  setTimeout(function() { showUniqueKeyModal(); }, 300);
+};
 
 document.addEventListener('DOMContentLoaded', function() {
   updateLoadoutBadge();
@@ -223,130 +243,69 @@ function createToastContainer() {
   return container;
 }
 
-// Shows Sign In Required modal when a non-logged user attempts to get key
-function showLoginRequiredModal() {
-  var oldModal = document.getElementById('loginRequiredKeyModal');
-  if (oldModal) {
-    try { 
-      var inst = bootstrap.Modal.getInstance(oldModal);
-      if (inst) inst.hide();
-    } catch(e) {}
-    if (oldModal.parentNode) oldModal.parentNode.removeChild(oldModal);
-  }
+// Standalone Overlay Modal Creator (Guaranteed 100% visible on all browsers, AdBlockers, & Brave Shields)
+function createCustomNexusOverlay(modalId, innerHtml) {
+  var old = document.getElementById(modalId);
+  if (old && old.parentNode) old.parentNode.removeChild(old);
 
-  var modal = document.createElement('div');
-  modal.id = 'loginRequiredKeyModal';
-  modal.className = 'modal fade';
-  modal.tabIndex = '-1';
-  document.body.appendChild(modal);
+  var overlay = document.createElement('div');
+  overlay.id = modalId;
+  overlay.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(9, 9, 14, 0.92) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; z-index: 999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 15px !important; box-sizing: border-box !important; opacity: 1 !important; visibility: visible !important;';
 
-  modal.innerHTML = 
-    '<div class="modal-dialog modal-dialog-centered">' +
-      '<div class="modal-content glass-card border-zinc text-light rounded-4 shadow-lg" style="background:#0d0d12;border:1px solid #ff4444;">' +
-        '<div class="modal-header border-secondary">' +
-          '<h5 class="modal-title font-orbitron text-white"><i class="fa-solid fa-lock text-danger me-2"></i>SIGN IN REQUIRED</h5>' +
-          '<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>' +
-        '</div>' +
-        '<div class="modal-body text-center py-4">' +
-          '<div class="mb-3 text-danger fs-1"><i class="fa-solid fa-user-shield"></i></div>' +
-          '<h4 class="font-orbitron text-white mb-2">Account Required</h4>' +
-          '<p class="text-secondary small mb-4">You must be logged in to generate your personal 24-hour script key. Please sign in or create a free account to continue!</p>' +
-          '<a href="/profile" class="btn btn-warning w-100 rounded-pill font-orbitron fw-bold py-2 text-dark mb-2">' +
-            '<i class="fa-solid fa-right-to-bracket me-2"></i> Sign In / Create Account' +
-          '</a>' +
-          '<button type="button" class="btn btn-outline-secondary w-100 rounded-pill font-orbitron py-2 text-white" data-bs-dismiss="modal">' +
-            'Cancel' +
-          '</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
+  var dialog = document.createElement('div');
+  dialog.style.cssText = 'width: 100% !important; max-width: 450px !important; background: #0e0e13 !important; border: 1px solid #ffaa00 !important; border-radius: 18px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(255,170,0,0.2) !important; padding: 25px !important; text-align: center !important; color: #ffffff !important; position: relative !important; font-family: "Inter", sans-serif !important;';
 
-  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-    var bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
-  } else {
-    modal.style.display = 'block';
-    modal.classList.add('show');
-  }
+  dialog.innerHTML = innerHtml;
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    }
+  });
+
+  return overlay;
 }
 
-// Triggers Unique 24-Hour Per-User Key Generation via Ad Gateway (Login Enforced)
-window.triggerGetDailyKey = function triggerGetDailyKey() {
-  // Check if user is logged in
-  if (!window.currentUser) {
-    showLoginRequiredModal();
-    return;
-  }
+// Shows Sign In Required modal when a non-logged user attempts to get key
+function showLoginRequiredModal() {
+  var html = 
+    '<div style="position:absolute; top:15px; right:15px; cursor:pointer; color:#888; font-size:20px;" onclick="var m=document.getElementById(\'loginRequiredKeyModal\'); if(m) m.remove();">&times;</div>' +
+    '<div style="font-size: 3rem; color: #ffaa00; margin-bottom: 10px;"><i class="fa-solid fa-user-shield"></i></div>' +
+    '<h3 style="font-family:\'Orbitron\',sans-serif; font-size:1.4rem; color:#fff; margin-bottom:10px; font-weight:bold;">ACCOUNT REQUIRED</h3>' +
+    '<p style="color:#aaa; font-size:0.9rem; margin-bottom:20px; line-height:1.5;">You must be logged in to generate your personal 24-hour script key. Please sign in or create a free account to continue!</p>' +
+    '<a href="/profile" style="display:block; width:100%; padding:14px; background:#ffaa00; color:#0d0d12; font-weight:bold; font-family:\'Orbitron\',sans-serif; text-decoration:none; border-radius:30px; margin-bottom:10px; font-size:0.95rem; box-shadow: 0 4px 15px rgba(255,170,0,0.4); box-sizing:border-box;">' +
+      '<i class="fa-solid fa-right-to-bracket me-2"></i> SIGN IN / CREATE ACCOUNT' +
+    '</a>' +
+    '<button onclick="var m=document.getElementById(\'loginRequiredKeyModal\'); if(m) m.remove();" style="display:block; width:100%; padding:10px; background:transparent; color:#888; border:1px solid #333; border-radius:30px; cursor:pointer; font-size:0.85rem;">' +
+      'Cancel' +
+    '</button>';
 
-  try {
-    // 1. Open Ad Network in New Tab
-    var adUrl = window.adGatewayUrl || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
-    var adWin = window.open(adUrl, '_blank');
-    if (!adWin) {
-      var a = document.createElement('a');
-      a.href = adUrl;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-  } catch(e) {
-    console.warn('Ad gateway open error:', e);
-  }
-
-  // 2. Show Key Generation Countdown Modal
-  setTimeout(function() { showUniqueKeyModal(); }, 300);
-};
+  createCustomNexusOverlay('loginRequiredKeyModal', html);
+}
 
 function showUniqueKeyModal() {
-  // Remove old modal if exists to prevent stale state
-  var oldModal = document.getElementById('uniqueKeyGatewayModal');
-  if (oldModal) {
-    try { 
-      var inst = bootstrap.Modal.getInstance(oldModal);
-      if (inst) inst.hide();
-    } catch(e) {}
-    if (oldModal.parentNode) oldModal.parentNode.removeChild(oldModal);
-  }
-
-  var modal = document.createElement('div');
-  modal.id = 'uniqueKeyGatewayModal';
-  modal.className = 'modal fade';
-  modal.tabIndex = '-1';
-  document.body.appendChild(modal);
-
-  modal.innerHTML = 
-    '<div class="modal-dialog modal-dialog-centered">' +
-      '<div class="modal-content glass-card border-zinc text-light rounded-4 shadow-lg" style="background:#0d0d12;border:1px solid #333;">' +
-        '<div class="modal-header border-secondary">' +
-          '<h5 class="modal-title font-orbitron text-white"><i class="fa-solid fa-key text-warning me-2"></i>YOUR UNIQUE 24H KEY</h5>' +
-          '<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>' +
-        '</div>' +
-        '<div class="modal-body text-center py-4">' +
-          '<div class="spinner-border text-warning mb-3" id="keyTimerSpinner" role="status" style="width:3rem;height:3rem;">' +
-            '<span class="visually-hidden">Generating...</span>' +
-          '</div>' +
-          '<h4 class="font-orbitron text-white mb-2" id="keyModalStatus">Verifying Sponsor Visit...</h4>' +
-          '<p class="text-secondary small mb-3">Generating your personal un-shareable 24-hour script key in <strong class="text-warning fs-5" id="keyCountdownVal">5</strong> seconds...</p>' +
-          '<div class="progress bg-dark mb-3" style="height:6px;">' +
-            '<div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" id="keyProgressBar" style="width:0%"></div>' +
-          '</div>' +
-          '<div style="display:none;" id="keyResultArea">' +
-            '<div class="p-3 rounded-3 border border-secondary mb-3" style="background:#111118;">' +
-              '<small class="text-uppercase text-secondary font-orbitron d-block mb-1">Your Personal 24-Hour Key:</small>' +
-              '<code class="fs-5 text-warning font-monospace user-select-all" id="generatedKeyBox">NEXUS-KEY-LOADING</code>' +
-            '</div>' +
-            '<button class="btn btn-warning w-100 rounded-pill font-orbitron fw-bold py-2 text-dark" id="copyGeneratedKeyBtn">' +
-              '<i class="fa-solid fa-copy me-2"></i> Copy Personal Key' +
-            '</button>' +
-          '</div>' +
-        '</div>' +
+  var html = 
+    '<div style="position:absolute; top:15px; right:15px; cursor:pointer; color:#888; font-size:20px;" onclick="var m=document.getElementById(\'uniqueKeyGatewayModal\'); if(m) m.remove();">&times;</div>' +
+    '<div id="keyTimerSpinner" style="width:3rem; height:3rem; border:3px solid #333; border-top:3px solid #ffaa00; border-radius:50%; margin:0 auto 15px; animation: keySpin 1s linear infinite;"></div>' +
+    '<style>@keyframes keySpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>' +
+    '<h3 style="font-family:\'Orbitron\',sans-serif; font-size:1.3rem; color:#fff; margin-bottom:8px;" id="keyModalStatus">Verifying Sponsor Visit...</h3>' +
+    '<p style="color:#aaa; font-size:0.85rem; margin-bottom:15px;">Generating your personal un-shareable 24-hour script key in <strong style="color:#ffaa00; font-size:1.2rem;" id="keyCountdownVal">5</strong> seconds...</p>' +
+    '<div style="background:#1a1a24; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">' +
+      '<div id="keyProgressBar" style="background:#ffaa00; height:100%; width:0%; transition: width 1s linear;"></div>' +
+    '</div>' +
+    '<div id="keyResultArea" style="display:none;">' +
+      '<div style="background:#14141d; padding:12px; border-radius:10px; border:1px solid #333; margin-bottom:15px;">' +
+        '<small style="display:block; color:#888; text-transform:uppercase; font-size:0.75rem; margin-bottom:5px;">Your Personal 24-Hour Key:</small>' +
+        '<code id="generatedKeyBox" style="font-size:1.1rem; color:#ffaa00; font-family:monospace; user-select:all; word-break:break-all;">NEXUS-KEY-LOADING</code>' +
       '</div>' +
+      '<button id="copyGeneratedKeyBtn" style="display:block; width:100%; padding:12px; background:#ffaa00; color:#0d0d12; font-weight:bold; font-family:\'Orbitron\',sans-serif; border:none; border-radius:30px; cursor:pointer; font-size:0.9rem;">' +
+        '<i class="fa-solid fa-copy me-2"></i> Copy Personal Key' +
+      '</button>' +
     '</div>';
 
-  var bsModal = new bootstrap.Modal(modal);
-  bsModal.show();
+  var overlay = createCustomNexusOverlay('uniqueKeyGatewayModal', html);
 
   var seconds = 5;
   var countdownVal = document.getElementById('keyCountdownVal');
@@ -367,10 +326,8 @@ function showUniqueKeyModal() {
       if (spinner) spinner.style.display = 'none';
       if (statusTxt) statusTxt.textContent = 'Key Unlocked & Generated!';
 
-      // Generate a client-side fallback key immediately
       var fallbackKey = 'NEXUS-KEY-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + new Date().toISOString().slice(0,10).replace(/-/g,'');
 
-      // Request API key generation
       fetch('/api/key/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -385,9 +342,8 @@ function showUniqueKeyModal() {
           copyBtn.onclick = function() {
             navigator.clipboard.writeText(finalKey).then(function() {
               showToast('Personal 24-Hour Key copied to clipboard!', 'success');
-              bsModal.hide();
+              if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             }).catch(function() {
-              // Fallback copy for older browsers
               var ta = document.createElement('textarea');
               ta.value = finalKey;
               document.body.appendChild(ta);
@@ -395,7 +351,7 @@ function showUniqueKeyModal() {
               document.execCommand('copy');
               document.body.removeChild(ta);
               showToast('Personal 24-Hour Key copied!', 'success');
-              bsModal.hide();
+              if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             });
           };
         }
@@ -408,7 +364,7 @@ function showUniqueKeyModal() {
           copyBtn.onclick = function() {
             navigator.clipboard.writeText(fallbackKey).then(function() {
               showToast('Personal 24-Hour Key copied!', 'success');
-              bsModal.hide();
+              if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             }).catch(function() {
               var ta = document.createElement('textarea');
               ta.value = fallbackKey;
@@ -417,7 +373,7 @@ function showUniqueKeyModal() {
               document.execCommand('copy');
               document.body.removeChild(ta);
               showToast('Personal 24-Hour Key copied!', 'success');
-              bsModal.hide();
+              if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             });
           };
         }
