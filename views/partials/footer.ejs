@@ -20,23 +20,34 @@
     </div>
   </footer>
 
-  <!-- Bootstrap 5.3.3 JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap 5.3.3 JS Bundle (deferred - does not block rendering) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 
-  <!-- Custom Scripts -->
-  <script src="/js/main.js"></script>
-  <script src="/js/search.js"></script>
-  <script src="/js/loadout.js"></script>
+  <!-- Custom Scripts (deferred - does not block rendering) -->
+  <script src="/js/main.js" defer></script>
+  <script src="/js/search.js" defer></script>
+  <script src="/js/loadout.js" defer></script>
 
-  <!-- Adsterra Official Popunder Ad Script -->
-  <script src="https://pl30590575.effectivecpmnetwork.com/50/1b/bf/501bbfd965b5f39334c020af9a3253be.js"></script>
-
-  <!-- Adsterra Official Social Bar Notification Ad Script -->
-  <script src="https://pl30590577.effectivecpmnetwork.com/76/a8/fb/76a8fb887a752f1942c76ef338dc2a56.js"></script>
-
-  <!-- Automatic Smartlink Ad Gateway Setup -->
+  <!-- Ad Gateway URL Setup -->
   <script>
     window.adGatewayUrl = '<%= typeof adGatewayUrl !== "undefined" && adGatewayUrl ? adGatewayUrl : "https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49" %>';
+  </script>
+
+  <!-- Adsterra Ad Scripts: LAZY-LOADED after page is fully interactive (won't slow down anything) -->
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var s1 = document.createElement('script');
+        s1.src = 'https://pl30590575.effectivecpmnetwork.com/50/1b/bf/501bbfd965b5f39334c020af9a3253be.js';
+        s1.async = true;
+        document.body.appendChild(s1);
+
+        var s2 = document.createElement('script');
+        s2.src = 'https://pl30590577.effectivecpmnetwork.com/76/a8/fb/76a8fb887a752f1942c76ef338dc2a56.js';
+        s2.async = true;
+        document.body.appendChild(s2);
+      }, 2000);
+    });
   </script>
 </body>
 </html>

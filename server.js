@@ -48,8 +48,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(COOKIE_SECRET));
 
-// Disable directory listing & serve public assets
-app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+// Aggressive Static File Caching (1 year for assets, immutable)
+app.use(express.static(path.join(__dirname, 'public'), {
+  index: false,
+  maxAge: '365d',
+  immutable: true,
+  etag: true,
+  lastModified: true
+}));
 
 // 4. View Engine Configuration
 app.set('views', path.join(__dirname, 'views'));
