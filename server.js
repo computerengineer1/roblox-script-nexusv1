@@ -310,11 +310,20 @@ app.get('/subscribe/:mapId', (req, res) => {
 // AJAX API ENDPOINTS
 // ==========================================================================
 
-// Generate Unique 24-Hour Key API Endpoint
+// Generate Unique 24-Hour Key API Endpoint (Requires Login)
 app.post('/api/key/generate', async (req, res) => {
   try {
+    if (!res.locals.currentUser) {
+      return res.status(401).json({
+        success: false,
+        requireLogin: true,
+        error: 'You must be signed in to generate a 24-hour daily key.'
+      });
+    }
+
     const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-    const keyData = await generateUniqueUserKey(userIp);
+    const userId = res.locals.currentUser.id || res.locals.currentUser.email || userIp;
+    const keyData = await generateUniqueUserKey(userId);
     res.json({
       success: true,
       key: keyData.keyCode,

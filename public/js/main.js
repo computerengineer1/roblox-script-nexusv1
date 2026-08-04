@@ -214,14 +214,58 @@ function createToastContainer() {
   return container;
 }
 
-// Triggers Unique 24-Hour Per-User Key Generation via Ad Gateway
+// Shows Sign In Required modal when a non-logged user attempts to get key
+function showLoginRequiredModal() {
+  var oldModal = document.getElementById('loginRequiredKeyModal');
+  if (oldModal) {
+    try { bootstrap.Modal.getInstance(oldModal)?.hide(); } catch(e) {}
+    oldModal.remove();
+  }
+
+  var modal = document.createElement('div');
+  modal.id = 'loginRequiredKeyModal';
+  modal.className = 'modal fade';
+  modal.tabIndex = '-1';
+  document.body.appendChild(modal);
+
+  modal.innerHTML = 
+    '<div class="modal-dialog modal-dialog-centered">' +
+      '<div class="modal-content glass-card border-zinc text-light rounded-4 shadow-lg" style="background:#0d0d12;border:1px solid #ff4444;">' +
+        '<div class="modal-header border-secondary">' +
+          '<h5 class="modal-title font-orbitron text-white"><i class="fa-solid fa-lock text-danger me-2"></i>SIGN IN REQUIRED</h5>' +
+          '<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>' +
+        '</div>' +
+        '<div class="modal-body text-center py-4">' +
+          '<div class="mb-3 text-danger fs-1"><i class="fa-solid fa-user-shield"></i></div>' +
+          '<h4 class="font-orbitron text-white mb-2">Account Required</h4>' +
+          '<p class="text-secondary small mb-4">You must be logged in to generate your personal 24-hour script key. Please sign in or create a free account to continue!</p>' +
+          '<a href="/profile" class="btn btn-warning w-100 rounded-pill font-orbitron fw-bold py-2 text-dark mb-2">' +
+            '<i class="fa-solid fa-right-to-bracket me-2"></i> Sign In / Create Account' +
+          '</a>' +
+          '<button type="button" class="btn btn-outline-secondary w-100 rounded-pill font-orbitron py-2 text-white" data-bs-dismiss="modal">' +
+            'Cancel' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  var bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+}
+
+// Triggers Unique 24-Hour Per-User Key Generation via Ad Gateway (Login Enforced)
 function triggerGetDailyKey() {
+  // Check if user is logged in
+  if (!window.currentUser) {
+    showLoginRequiredModal();
+    return;
+  }
+
   try {
-    // 1. Open Ad Network in New Tab (must be first action in click handler for popup allowance)
+    // 1. Open Ad Network in New Tab
     var adUrl = window.adGatewayUrl || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
     var adWin = window.open(adUrl, '_blank');
     if (!adWin) {
-      // Popup was blocked, use link fallback
       var a = document.createElement('a');
       a.href = adUrl;
       a.target = '_blank';
