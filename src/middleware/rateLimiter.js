@@ -1,10 +1,10 @@
 const rateLimit = require('express-rate-limit');
 const pool = require('../config/db');
 
-// Global rate limiter: 100 requests per 15 minutes per IP
+// Global rate limiter: 300 requests per 15 minutes per IP
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests from this IP, please try again after 15 minutes.' }
