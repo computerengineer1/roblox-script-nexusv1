@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const skipAdBtn = document.getElementById('skipAdBtn');
   const adCountdown = document.getElementById('adCountdown');
   const adSpinner = document.getElementById('adSpinner');
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+  const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
 
   let activeScriptData = null;
   let countdownInterval = null;

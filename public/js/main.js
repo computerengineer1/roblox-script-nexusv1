@@ -218,8 +218,11 @@ function createToastContainer() {
 function showLoginRequiredModal() {
   var oldModal = document.getElementById('loginRequiredKeyModal');
   if (oldModal) {
-    try { bootstrap.Modal.getInstance(oldModal)?.hide(); } catch(e) {}
-    oldModal.remove();
+    try { 
+      var inst = bootstrap.Modal.getInstance(oldModal);
+      if (inst) inst.hide();
+    } catch(e) {}
+    if (oldModal.parentNode) oldModal.parentNode.removeChild(oldModal);
   }
 
   var modal = document.createElement('div');
@@ -249,12 +252,17 @@ function showLoginRequiredModal() {
       '</div>' +
     '</div>';
 
-  var bsModal = new bootstrap.Modal(modal);
-  bsModal.show();
+  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    var bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+  } else {
+    modal.style.display = 'block';
+    modal.classList.add('show');
+  }
 }
 
 // Triggers Unique 24-Hour Per-User Key Generation via Ad Gateway (Login Enforced)
-function triggerGetDailyKey() {
+window.triggerGetDailyKey = function triggerGetDailyKey() {
   // Check if user is logged in
   if (!window.currentUser) {
     showLoginRequiredModal();
@@ -280,14 +288,17 @@ function triggerGetDailyKey() {
 
   // 2. Show Key Generation Countdown Modal
   setTimeout(function() { showUniqueKeyModal(); }, 300);
-}
+};
 
 function showUniqueKeyModal() {
   // Remove old modal if exists to prevent stale state
   var oldModal = document.getElementById('uniqueKeyGatewayModal');
   if (oldModal) {
-    try { bootstrap.Modal.getInstance(oldModal)?.hide(); } catch(e) {}
-    oldModal.remove();
+    try { 
+      var inst = bootstrap.Modal.getInstance(oldModal);
+      if (inst) inst.hide();
+    } catch(e) {}
+    if (oldModal.parentNode) oldModal.parentNode.removeChild(oldModal);
   }
 
   var modal = document.createElement('div');
