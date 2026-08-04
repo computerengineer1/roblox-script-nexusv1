@@ -102,3 +102,14 @@ CREATE TABLE login_attempts (
     ip_address VARCHAR(45) NOT NULL,
     attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Unique 24-Hour Keys Table
+CREATE TABLE user_keys (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    key_code VARCHAR(100) NOT NULL UNIQUE,
+    user_ip VARCHAR(60) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_key_code (key_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

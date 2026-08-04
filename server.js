@@ -24,7 +24,9 @@ const {
   getScriptCodeById,
   addScript,
   deleteScript,
-  searchMapsAndScripts
+  searchMapsAndScripts,
+  generateUniqueUserKey,
+  verifyUserKey
 } = require('./src/utils/dataStore');
 
 const app = express();
@@ -307,6 +309,42 @@ app.get('/subscribe/:mapId', (req, res) => {
 // ==========================================================================
 // AJAX API ENDPOINTS
 // ==========================================================================
+
+// Generate Unique 24-Hour Key API Endpoint
+app.post('/api/key/generate', async (req, res) => {
+  try {
+    const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+    const keyData = await generateUniqueUserKey(userIp);
+    res.json({
+      success: true,
+      key: keyData.keyCode,
+      expiresAt: keyData.expiresAt
+    });
+  } catch (err) {
+    console.error('Key generation error:', err);
+    res.status(500).json({ error: 'Failed to generate key' });
+  }
+});
+
+// Roblox In-Game Key Verification API Endpoint
+app.get('/api/key/verify', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+  const keyCode = req.query.key;
+  if (!keyCode) {
+    return res.json({ valid: false, error: 'No key provided' });
+  }
+
+  const isValid = await verifyUserKey(keyCode);
+  if (isValid) {
+    return res.json({ valid: true, message: 'Key is active & valid for 24 hours' });
+  } else {
+    return res.json({ valid: false, error: 'Key expired or invalid! Get a new daily key at site.' });
+  }
+});
 
 // Instant Full-Text Visual Search API
 app.get('/api/search', async (req, res) => {

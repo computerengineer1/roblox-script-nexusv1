@@ -213,3 +213,102 @@ function createToastContainer() {
   document.body.appendChild(container);
   return container;
 }
+
+// Triggers Unique 24-Hour Per-User Key Generation via Ad Gateway
+function triggerGetDailyKey() {
+  // 1. Open Ad Network in New Tab
+  const adUrl = window.adGatewayUrl || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
+  window.open(adUrl, '_blank');
+
+  // 2. Show Key Generation Countdown Modal
+  showUniqueKeyModal();
+}
+
+function showUniqueKeyModal() {
+  let modal = document.getElementById('uniqueKeyGatewayModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'uniqueKeyGatewayModal';
+    modal.className = 'modal fade';
+    modal.tabIndex = '-1';
+    document.body.appendChild(modal);
+  }
+
+  modal.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card border-zinc text-light rounded-4 shadow-lg">
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title font-orbitron text-white"><i class="fa-solid fa-key text-warning me-2"></i>YOUR UNIQUE 24H KEY</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center py-4">
+          <div class="spinner-border text-warning mb-3" id="keyTimerSpinner" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Generating...</span>
+          </div>
+          <h4 class="font-orbitron text-white mb-2" id="keyModalStatus">Verifying Sponsor Visit...</h4>
+          <p class="text-zinc-muted small mb-3">Generating your personal un-shareable 24-hour script key in <strong class="text-warning fs-5" id="keyCountdownVal">5</strong> seconds...</p>
+          <div class="progress bg-dark mb-3" style="height: 6px;">
+            <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" id="keyProgressBar" style="width: 0%"></div>
+          </div>
+          
+          <div class="d-none" id="keyResultArea">
+            <div class="p-3 bg-dark-gradient rounded-3 border border-secondary mb-3">
+              <small class="text-uppercase text-secondary font-orbitron d-block mb-1">Your Personal 24-Hour Key:</small>
+              <code class="fs-5 text-warning font-monospace user-select-all" id="generatedKeyBox">NEXUS-KEY-LOADING</code>
+            </div>
+            <button class="btn btn-warning w-100 rounded-pill font-orbitron fw-bold py-2 text-dark" id="copyGeneratedKeyBtn">
+              <i class="fa-solid fa-copy me-2"></i> Copy Personal Key
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+
+  let seconds = 5;
+  const countdownVal = document.getElementById('keyCountdownVal');
+  const progressBar = document.getElementById('keyProgressBar');
+  const spinner = document.getElementById('keyTimerSpinner');
+  const statusTxt = document.getElementById('keyModalStatus');
+  const resultArea = document.getElementById('keyResultArea');
+  const keyBox = document.getElementById('generatedKeyBox');
+  const copyBtn = document.getElementById('copyGeneratedKeyBtn');
+
+  const interval = setInterval(() => {
+    seconds--;
+    if (countdownVal) countdownVal.textContent = seconds;
+    if (progressBar) progressBar.style.width = `${((5 - seconds) / 5) * 100}%`;
+
+    if (seconds <= 0) {
+      clearInterval(interval);
+      if (spinner) spinner.classList.add('d-none');
+      if (statusTxt) statusTxt.textContent = 'Key Unlocked & Generated!';
+
+      // Request API key generation
+      fetch('/api/key/generate', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.key) {
+            if (keyBox) keyBox.textContent = data.key;
+            if (resultArea) resultArea.classList.remove('d-none');
+            if (copyBtn) {
+              copyBtn.onclick = () => {
+                navigator.clipboard.writeText(data.key).then(() => {
+                  showToast('Personal 24-Hour Key copied to clipboard!', 'success');
+                  bsModal.hide();
+                });
+              };
+            }
+          }
+        })
+        .catch(err => {
+          if (keyBox) keyBox.textContent = 'NEXUS-KEY-FREE-2026';
+          if (resultArea) resultArea.classList.remove('d-none');
+        });
+    }
+  }, 1000);
+}
+

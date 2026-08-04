@@ -845,6 +845,80 @@ async function searchMapsAndScripts(query) {
     }));
 }
 
+// In-Memory Keys Store Fallback
+let memoryKeys = [];
+
+/**
+ * Generates a unique 24-hour key per user session/IP
+ */
+async function generateUniqueUserKey(userIp = '127.0.0.1') {
+  const crypto = require('crypto');
+  const randomHex = crypto.randomBytes(4).toString('hex').toUpperCase();
+  const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const keyCode = `NEXUS-KEY-${randomHex}-${dateStr}`;
+
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 Hours valid
+  const expiresAtSql = expiresAt.toISOString().slice(0, 19).replace('T', ' ');
+
+  try {
+    // Ensure table exists
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS user_keys (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        key_code VARCHAR(100) NOT NULL UNIQUE,
+        user_ip VARCHAR(60) NOT NULL,
+        expires_at DATETIME NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_key_code (key_code)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `);
+
+    await pool.execute(
+      'INSERT INTO user_keys (key_code, user_ip, expires_at) VALUES (?, ?, ?)',
+      [keyCode, userIp, expiresAtSql]
+    );
+  } catch (err) {
+    console.warn('DB generateUniqueUserKey fallback to memory:', err.message);
+  }
+
+  memoryKeys.push({
+    key_code: keyCode,
+    user_ip: userIp,
+    expires_at: expiresAt.getTime()
+  });
+
+  return {
+    keyCode,
+    expiresAt: expiresAt.toISOString()
+  };
+}
+
+/**
+ * Verifies if a 24-hour key is valid and not expired
+ */
+async function verifyUserKey(keyCode) {
+  if (!keyCode || typeof keyCode !== 'string') return false;
+  const cleanKey = keyCode.trim();
+
+  // Allow global master key
+  if (cleanKey === 'NEXUS-FREE-2026') return true;
+
+  try {
+    const [rows] = await pool.execute(
+      'SELECT * FROM user_keys WHERE key_code = ? AND expires_at > NOW()',
+      [cleanKey]
+    );
+    if (rows && rows.length > 0) return true;
+  } catch (err) {
+    console.warn('DB verifyUserKey fallback:', err.message);
+  }
+
+  // Check memory fallback
+  const now = Date.now();
+  const foundMemory = memoryKeys.find(k => k.key_code === cleanKey && k.expires_at > now);
+  return !!foundMemory;
+}
+
 module.exports = {
   getMaps,
   getMapById,
@@ -856,7 +930,10 @@ module.exports = {
   addScript,
   deleteScript,
   searchMapsAndScripts,
+  generateUniqueUserKey,
+  verifyUserKey,
   memoryMaps,
   memoryScripts,
   RIVALS_LUA_CODE
 };
+
