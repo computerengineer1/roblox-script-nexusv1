@@ -1,6 +1,88 @@
 <%- include('partials/header', { title: 'Roblox Script Vault - Minimalist Script Hub' }) %>
 
 <main class="container py-4 flex-grow-1">
+
+  <!-- Cinematic Intro Video Fullscreen Overlay -->
+  <div id="nexusIntroOverlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #09090b; z-index: 99999999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.8s ease; visibility: visible;">
+    
+    <!-- Top Control Bar -->
+    <div style="position: absolute; top: 20px; left: 20px; right: 20px; display: flex; align-items: center; justify-content: space-between; z-index: 10;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <img src="/images/logo.png" alt="Logo" width="32" height="32" style="border-radius: 6px; border: 1px solid #333;">
+        <span style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: #fff; letter-spacing: 1px;">SCRIPT<span style="color: #ffaa00; margin-left: 4px;">NEXUS</span></span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button id="introSoundToggleBtn" onclick="toggleIntroSound()" style="background: rgba(24, 24, 27, 0.8); border: 1px solid #3f3f46; color: #fff; padding: 8px 16px; border-radius: 30px; cursor: pointer; font-family: sans-serif; font-size: 0.85rem; backdrop-filter: blur(10px);">
+          🔊 Unmute Sound
+        </button>
+        <button onclick="dismissIntroVideo()" style="background: #ffaa00; border: none; color: #0d0d12; font-weight: bold; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);">
+          SKIP INTRO ⏩
+        </button>
+      </div>
+    </div>
+
+    <!-- Video Element -->
+    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative;">
+      <video id="nexusIntroVideo" src="/videos/intro.mp4" autoplay muted playsinline style="max-width: 100%; max-height: 100%; object-fit: contain;"></video>
+    </div>
+
+    <!-- Bottom Video Progress Bar -->
+    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1);">
+      <div id="introVideoProgressBar" style="width: 0%; height: 100%; background: #ffaa00; transition: width 0.1s linear;"></div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Check if intro has already been shown in this session
+      if (sessionStorage.getItem('nexus_intro_shown') === '1') {
+        var ov = document.getElementById('nexusIntroOverlay');
+        if (ov) ov.remove();
+        return;
+      }
+
+      var video = document.getElementById('nexusIntroVideo');
+      var progressBar = document.getElementById('introVideoProgressBar');
+      var soundBtn = document.getElementById('introSoundToggleBtn');
+
+      if (video) {
+        video.addEventListener('timeupdate', function() {
+          if (video.duration) {
+            var pct = (video.currentTime / video.duration) * 100;
+            if (progressBar) progressBar.style.width = pct + '%';
+          }
+        });
+
+        video.addEventListener('ended', function() {
+          dismissIntroVideo();
+        });
+
+        video.addEventListener('error', function() {
+          dismissIntroVideo();
+        });
+      }
+
+      window.toggleIntroSound = function() {
+        if (!video) return;
+        video.muted = !video.muted;
+        if (soundBtn) {
+          soundBtn.textContent = video.muted ? '🔊 Unmute Sound' : '🔇 Mute Sound';
+        }
+      };
+
+      window.dismissIntroVideo = function() {
+        var overlay = document.getElementById('nexusIntroOverlay');
+        if (!overlay) return;
+        sessionStorage.setItem('nexus_intro_shown', '1');
+        overlay.style.opacity = '0';
+        setTimeout(function() {
+          if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+          }
+        }, 800);
+      };
+    })();
+  </script>
   
   <!-- Professional Animated Hero Intro Section -->
   <section class="hero-section text-center py-5 mb-5 position-relative overflow-hidden">
