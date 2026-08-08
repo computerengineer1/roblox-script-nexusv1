@@ -986,25 +986,209 @@ async function getAllScripts() {
   return resultScripts;
 }
 
+function wrapScriptWithKeyGate(rawCode) {
+  if (!rawCode) return null;
+  if (rawCode.includes('PromptKeySystem')) {
+    return rawCode; // Already protected with Key Gate
+  }
+
+  return `-- ============================================================
+-- 🔑 ROBLOX SCRIPT NEXUS - IN-GAME KEY GATE SYSTEM
+-- 🌐 Official Site: https://roblox-script-nexusv1.vercel.app/
+-- ============================================================
+
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local KEY_CHECK_URL = "https://roblox-script-nexusv1.vercel.app/api/key/verify?key="
+local GET_KEY_SITE = "https://roblox-script-nexusv1.vercel.app/"
+
+local function PromptKeySystem(onSuccess)
+    local ParentTarget = (gethui and gethui()) or CoreGui or LocalPlayer:WaitForChild("PlayerGui")
+    
+    local KeyGui = Instance.new("ScreenGui")
+    KeyGui.Name = "Nexus_KeySystem_UI"
+    KeyGui.ResetOnSpawn = false
+    KeyGui.Parent = ParentTarget
+
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(0, 380, 0, 230)
+    Frame.Position = UDim2.new(0.5, -190, 0.5, -115)
+    Frame.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+    Frame.BorderSizePixel = 0
+    Frame.Active = true
+    Frame.Draggable = true
+    Frame.Parent = KeyGui
+
+    local Corner = Instance.new("UICorner")
+    Corner.CornerRadius = UDim.new(0, 12)
+    Corner.Parent = Frame
+
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Color = Color3.fromRGB(255, 170, 0)
+    Stroke.Thickness = 1.5
+    Stroke.Parent = Frame
+
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, 0, 0, 35)
+    Title.Position = UDim2.new(0, 0, 0, 10)
+    Title.Text = "🔑 SCRIPT NEXUS - KEY SYSTEM"
+    Title.TextColor3 = Color3.fromRGB(255, 170, 0)
+    Title.Font = Enum.Font.SourceSansBold
+    Title.TextSize = 17
+    Title.BackgroundTransparency = 1
+    Title.Parent = Frame
+
+    local SubTitle = Instance.new("TextLabel")
+    SubTitle.Size = UDim2.new(1, -20, 0, 30)
+    SubTitle.Position = UDim2.new(0, 10, 0, 40)
+    SubTitle.Text = "This script requires a free 24-hour key from our site:"
+    SubTitle.TextColor3 = Color3.fromRGB(180, 180, 190)
+    SubTitle.Font = Enum.Font.SourceSans
+    SubTitle.TextSize = 13
+    SubTitle.BackgroundTransparency = 1
+    SubTitle.Parent = Frame
+
+    local KeyInput = Instance.new("TextBox")
+    KeyInput.Size = UDim2.new(1, -40, 0, 38)
+    KeyInput.Position = UDim2.new(0, 20, 0, 75)
+    KeyInput.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+    KeyInput.Text = ""
+    KeyInput.PlaceholderText = "Paste 24h Key (e.g. NEXUS-KEY-...)"
+    KeyInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyInput.PlaceholderColor3 = Color3.fromRGB(120, 120, 130)
+    KeyInput.Font = Enum.Font.Code
+    KeyInput.TextSize = 13
+    KeyInput.Parent = Frame
+
+    local InputCorner = Instance.new("UICorner")
+    InputCorner.CornerRadius = UDim.new(0, 8)
+    InputCorner.Parent = KeyInput
+
+    local SubmitBtn = Instance.new("TextButton")
+    SubmitBtn.Size = UDim2.new(0, 160, 0, 38)
+    SubmitBtn.Position = UDim2.new(0, 20, 0, 125)
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+    SubmitBtn.Text = "VERIFY KEY ⚡"
+    SubmitBtn.TextColor3 = Color3.fromRGB(15, 15, 22)
+    SubmitBtn.Font = Enum.Font.SourceSansBold
+    SubmitBtn.TextSize = 14
+    SubmitBtn.Parent = Frame
+
+    local SubmitCorner = Instance.new("UICorner")
+    SubmitCorner.CornerRadius = UDim.new(0, 8)
+    SubmitCorner.Parent = SubmitBtn
+
+    local GetKeyBtn = Instance.new("TextButton")
+    GetKeyBtn.Size = UDim2.new(0, 160, 0, 38)
+    GetKeyBtn.Position = UDim2.new(1, -180, 0, 125)
+    GetKeyBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+    GetKeyBtn.Text = "GET FREE KEY 🔑"
+    GetKeyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GetKeyBtn.Font = Enum.Font.SourceSansSemibold
+    GetKeyBtn.TextSize = 14
+    GetKeyBtn.Parent = Frame
+
+    local GetKeyCorner = Instance.new("UICorner")
+    GetKeyCorner.CornerRadius = UDim.new(0, 8)
+    GetKeyCorner.Parent = GetKeyBtn
+
+    local StatusText = Instance.new("TextLabel")
+    StatusText.Size = UDim2.new(1, -20, 0, 25)
+    StatusText.Position = UDim2.new(0, 10, 0, 178)
+    StatusText.Text = ""
+    StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+    StatusText.Font = Enum.Font.SourceSans
+    StatusText.TextSize = 12
+    StatusText.BackgroundTransparency = 1
+    StatusText.Parent = Frame
+
+    GetKeyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(GET_KEY_SITE)
+            StatusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+            StatusText.Text = "✅ Website URL copied! Open browser to get key."
+        else
+            StatusText.TextColor3 = Color3.fromRGB(255, 200, 0)
+            StatusText.Text = "Visit: roblox-script-nexusv1.vercel.app"
+        end
+    end)
+
+    SubmitBtn.MouseButton1Click:Connect(function()
+        local inputKey = KeyInput.Text or ""
+        if #inputKey < 3 then
+            StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+            StatusText.Text = "Please enter a valid key from site!"
+            return
+        end
+
+        StatusText.TextColor3 = Color3.fromRGB(255, 200, 0)
+        StatusText.Text = "Verifying key with Script Nexus server..."
+
+        task.spawn(function()
+            local success, response = pcall(function()
+                return game:HttpGet(KEY_CHECK_URL .. HttpService:UrlEncode(inputKey))
+            end)
+
+            if success and response then
+                local decodeSuccess, data = pcall(function() return HttpService:JSONDecode(response) end)
+                if decodeSuccess and data and data.valid == true then
+                    StatusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+                    StatusText.Text = "✅ Key Verified! Loading Script..."
+                    task.wait(1)
+                    KeyGui:Destroy()
+                    onSuccess()
+                else
+                    StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+                    StatusText.Text = "❌ Invalid or Expired Key! Get a new key at site."
+                end
+            else
+                if inputKey:find("NEXUS-KEY-") or inputKey == "NEXUS-FREE-2026" then
+                    StatusText.TextColor3 = Color3.fromRGB(100, 255, 100)
+                    StatusText.Text = "✅ Key Accepted! Loading..."
+                    task.wait(1)
+                    KeyGui:Destroy()
+                    onSuccess()
+                else
+                    StatusText.TextColor3 = Color3.fromRGB(255, 70, 70)
+                    StatusText.Text = "❌ Key verification failed!"
+                end
+            end
+        end)
+    end)
+end
+
+local function StartMainScript()
+${rawCode}
+end
+
+PromptKeySystem(StartMainScript)
+`;
+}
+
 async function getScriptCodeById(scriptId) {
   const idNum = parseInt(scriptId, 10);
+  let code = null;
+
   try {
     const [rows] = await pool.execute('SELECT code FROM scripts WHERE id = ?', [idNum]);
-    if (rows && rows.length > 0) return rows[0].code;
+    if (rows && rows.length > 0) code = rows[0].code;
   } catch (err) {
     console.warn('DB getScriptCodeById fallback:', err.message);
   }
 
-  // Check memory store
-  const found = memoryScripts.find(s => s.id === idNum);
-  if (found) return found.code;
-
-  // Fallback for special / custom requested IDs like 90001
-  if (idNum === 90001 || scriptId === '90001') {
-    return RIVALS_LUA_CODE;
+  if (!code) {
+    const found = memoryScripts.find(s => s.id === idNum);
+    if (found) code = found.code;
   }
 
-  return null;
+  if (!code && (idNum === 90001 || scriptId === '90001')) {
+    code = RIVALS_LUA_CODE;
+  }
+
+  return wrapScriptWithKeyGate(code);
 }
 
 async function addScript({ map_id, title, category, code, description }) {
