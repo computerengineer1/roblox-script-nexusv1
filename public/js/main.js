@@ -1,5 +1,26 @@
+// Interactive Emoji Burst FX
+window.triggerEmojiBurst = function triggerEmojiBurst(x, y, customEmojis) {
+  var emojis = customEmojis || ['✨', '⚡', '🔑', '📜', '💎', '👑'];
+  for (var i = 0; i < 8; i++) {
+    var p = document.createElement('span');
+    p.className = 'floating-emoji-particle';
+    p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    p.style.left = (x || (window.innerWidth / 2)) + 'px';
+    p.style.top = (y || (window.innerHeight / 2)) + 'px';
+    var dx = (Math.random() - 0.5) * 120 + 'px';
+    p.style.setProperty('--dx', dx);
+    document.body.appendChild(p);
+    (function(el) {
+      setTimeout(function() { if (el && el.parentNode) el.parentNode.removeChild(el); }, 1200);
+    })(p);
+  }
+};
+
 // Define triggerGetDailyKey globally on window before any DOM events
-window.triggerGetDailyKey = function triggerGetDailyKey() {
+window.triggerGetDailyKey = function triggerGetDailyKey(e) {
+  if (e && e.clientX) {
+    window.triggerEmojiBurst(e.clientX, e.clientY, ['🔑', '✨', '⚡', '💎']);
+  }
   if (!window.currentUser) {
     showLoginRequiredModal();
     return;
@@ -7,8 +28,8 @@ window.triggerGetDailyKey = function triggerGetDailyKey() {
   try {
     var adUrl = window.adGatewayUrl || 'https://www.effectivecpmnetwork.com/ceafmimnp?key=f32f759ee712c2d7c1dd08569741cc49';
     window.open(adUrl, '_blank');
-  } catch(e) {
-    console.warn('Ad gateway open error:', e);
+  } catch(err) {
+    console.warn('Ad gateway open error:', err);
   }
   setTimeout(function() { showUniqueKeyModal(); }, 300);
 };
@@ -17,6 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
   updateLoadoutBadge();
   initCopyAdGateway();
   initAntiAdBlockDetector();
+
+  // Attach emoji burst listener to all buttons
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('button, .btn, .copy-script-btn, a[href="/key"]');
+    if (btn) {
+      window.triggerEmojiBurst(e.clientX, e.clientY);
+    }
+  });
 
   // Auto-trigger key modal if user arrived via /key redirect
   if (window.location.hash === '#getkey') {

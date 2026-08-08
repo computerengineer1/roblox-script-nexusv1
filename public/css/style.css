@@ -433,3 +433,86 @@ a:hover { opacity: 0.95; }
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 0.5rem;
 }
+
+/* ==========================================================================
+   SUPERPOWER VISUAL & ANIMATION SYSTEM
+   ========================================================================== */
+
+/* 1. Metallic Gold Animated Shimmer Text */
+.gradient-gold-text {
+  background: linear-gradient(135deg, #ffffff 0%, #ffaa00 50%, #ffd700 80%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 4s linear infinite;
+  font-weight: 900;
+}
+
+@keyframes textShimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* 2. Floating Animation for Cards & Hero Elements */
+.floating-anim {
+  animation: floatHero 3.5s ease-in-out infinite;
+}
+
+@keyframes floatHero {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* 3. Gold Pulse Glow Button */
+.gold-glow-btn {
+  box-shadow: 0 0 15px rgba(255, 170, 0, 0.4), 0 0 30px rgba(255, 170, 0, 0.15);
+  animation: pulseGoldGlow 2.5s infinite;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.gold-glow-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 0 25px rgba(255, 170, 0, 0.7), 0 0 50px rgba(255, 170, 0, 0.3) !important;
+}
+
+@keyframes pulseGoldGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 170, 0, 0.4), 0 0 30px rgba(255, 170, 0, 0.15); }
+  50% { box-shadow: 0 0 25px rgba(255, 170, 0, 0.65), 0 0 45px rgba(255, 170, 0, 0.3); }
+}
+
+/* 4. Card Hover Lift & Neon Border Highlight */
+.card-hover-epic {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease !important;
+}
+
+.card-hover-epic:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(255, 170, 0, 0.5) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 170, 0, 0.18) !important;
+}
+
+/* 5. Live/Verified Pulse Badge */
+.badge-pulse {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.82; transform: scale(1.04); }
+}
+
+/* 6. Emoji Particle Burst Animation */
+.floating-emoji-particle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 1.5rem;
+  z-index: 999999;
+  animation: emojiFloatUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes emojiFloatUp {
+  0% { opacity: 1; transform: translate(0, 0) scale(0.6); }
+  50% { opacity: 0.9; transform: translate(var(--dx), -40px) scale(1.2); }
+  100% { opacity: 0; transform: translate(var(--dx), -90px) scale(0.8); }
+}
+
