@@ -37,7 +37,7 @@ local function PromptKeySystem(onSuccess)
     Corner.Parent = Frame
 
     local Stroke = Instance.new("UIStroke")
-    Stroke.Color = Color3.fromRGB(255, 170, 0)
+    Stroke.Color = Color3.fromRGB(220, 220, 225)
     Stroke.Thickness = 1.5
     Stroke.Parent = Frame
 
@@ -45,7 +45,7 @@ local function PromptKeySystem(onSuccess)
     Title.Size = UDim2.new(1, 0, 0, 35)
     Title.Position = UDim2.new(0, 0, 0, 10)
     Title.Text = "🔑 NEXUS SCRIPT - KEY SYSTEM"
-    Title.TextColor3 = Color3.fromRGB(255, 170, 0)
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.Font = Enum.Font.SourceSansBold
     Title.TextSize = 16
     Title.BackgroundTransparency = 1
@@ -80,9 +80,9 @@ local function PromptKeySystem(onSuccess)
     local SubmitBtn = Instance.new("TextButton")
     SubmitBtn.Size = UDim2.new(0, 155, 0, 36)
     SubmitBtn.Position = UDim2.new(0, 20, 0, 125)
-    SubmitBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     SubmitBtn.Text = "Verify Key"
-    SubmitBtn.TextColor3 = Color3.fromRGB(15, 15, 22)
+    SubmitBtn.TextColor3 = Color3.fromRGB(10, 10, 15)
     SubmitBtn.Font = Enum.Font.SourceSansBold
     SubmitBtn.TextSize = 14
     SubmitBtn.Parent = Frame
@@ -1027,7 +1027,7 @@ local function PromptKeySystem(onSuccess)
     Corner.Parent = Frame
 
     local Stroke = Instance.new("UIStroke")
-    Stroke.Color = Color3.fromRGB(255, 170, 0)
+    Stroke.Color = Color3.fromRGB(220, 220, 225)
     Stroke.Thickness = 1.5
     Stroke.Parent = Frame
 
@@ -1035,7 +1035,7 @@ local function PromptKeySystem(onSuccess)
     Title.Size = UDim2.new(1, 0, 0, 35)
     Title.Position = UDim2.new(0, 0, 0, 10)
     Title.Text = "🔑 SCRIPT NEXUS - KEY SYSTEM"
-    Title.TextColor3 = Color3.fromRGB(255, 170, 0)
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
     Title.Font = Enum.Font.SourceSansBold
     Title.TextSize = 17
     Title.BackgroundTransparency = 1
@@ -1070,9 +1070,9 @@ local function PromptKeySystem(onSuccess)
     local SubmitBtn = Instance.new("TextButton")
     SubmitBtn.Size = UDim2.new(0, 160, 0, 38)
     SubmitBtn.Position = UDim2.new(0, 20, 0, 125)
-    SubmitBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+    SubmitBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     SubmitBtn.Text = "VERIFY KEY ⚡"
-    SubmitBtn.TextColor3 = Color3.fromRGB(15, 15, 22)
+    SubmitBtn.TextColor3 = Color3.fromRGB(10, 10, 15)
     SubmitBtn.Font = Enum.Font.SourceSansBold
     SubmitBtn.TextSize = 14
     SubmitBtn.Parent = Frame

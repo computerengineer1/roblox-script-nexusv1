@@ -2,136 +2,61 @@
 
 <main class="container py-4 flex-grow-1">
 
-  <!-- Cinematic Intro Video Fullscreen Overlay -->
-  <div id="nexusIntroOverlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #09090b; z-index: 99999999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.8s ease; visibility: visible;">
-    
-    <!-- Top Control Bar -->
-    <div style="position: absolute; top: 20px; left: 20px; right: 20px; display: flex; align-items: center; justify-content: space-between; z-index: 10;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <img src="/images/logo.png" alt="Logo" width="32" height="32" style="border-radius: 6px; border: 1px solid #333;">
-        <span style="font-family: 'Orbitron', sans-serif; font-weight: bold; color: #fff; letter-spacing: 1px;">SCRIPT<span style="color: #ffaa00; margin-left: 4px;">NEXUS</span></span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <button id="introSoundToggleBtn" onclick="toggleIntroSound()" style="background: rgba(24, 24, 27, 0.8); border: 1px solid #3f3f46; color: #fff; padding: 8px 16px; border-radius: 30px; cursor: pointer; font-family: sans-serif; font-size: 0.85rem; backdrop-filter: blur(10px);">
-          🔊 Unmute Sound
-        </button>
-        <button onclick="dismissIntroVideo()" style="background: #ffaa00; border: none; color: #0d0d12; font-weight: bold; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; box-shadow: 0 0 15px rgba(255, 170, 0, 0.4);">
-          SKIP INTRO ⏩
-        </button>
-      </div>
-    </div>
-
-    <!-- Video Element -->
-    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative;">
-      <video id="nexusIntroVideo" src="/videos/intro.mp4" autoplay muted playsinline style="max-width: 100%; max-height: 100%; object-fit: contain;"></video>
-    </div>
-
-    <!-- Bottom Video Progress Bar -->
-    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1);">
-      <div id="introVideoProgressBar" style="width: 0%; height: 100%; background: #ffaa00; transition: width 0.1s linear;"></div>
-    </div>
-  </div>
-
-  <script>
-    (function() {
-      // Check if intro has already been shown in this session
-      if (sessionStorage.getItem('nexus_intro_shown') === '1') {
-        var ov = document.getElementById('nexusIntroOverlay');
-        if (ov) ov.remove();
-        return;
-      }
-
-      var video = document.getElementById('nexusIntroVideo');
-      var progressBar = document.getElementById('introVideoProgressBar');
-      var soundBtn = document.getElementById('introSoundToggleBtn');
-
-      if (video) {
-        video.addEventListener('timeupdate', function() {
-          if (video.duration) {
-            var pct = (video.currentTime / video.duration) * 100;
-            if (progressBar) progressBar.style.width = pct + '%';
-          }
-        });
-
-        video.addEventListener('ended', function() {
-          dismissIntroVideo();
-        });
-
-        video.addEventListener('error', function() {
-          dismissIntroVideo();
-        });
-      }
-
-      window.toggleIntroSound = function() {
-        if (!video) return;
-        video.muted = !video.muted;
-        if (soundBtn) {
-          soundBtn.textContent = video.muted ? '🔊 Unmute Sound' : '🔇 Mute Sound';
-        }
-      };
-
-      window.dismissIntroVideo = function() {
-        var overlay = document.getElementById('nexusIntroOverlay');
-        if (!overlay) return;
-        sessionStorage.setItem('nexus_intro_shown', '1');
-        overlay.style.opacity = '0';
-        setTimeout(function() {
-          if (overlay && overlay.parentNode) {
-            overlay.parentNode.removeChild(overlay);
-          }
-        }, 800);
-      };
-    })();
-  </script>
-  
-  <!-- Professional Animated Hero Intro Section -->
+  <!-- Professional Minimalist Hero Section -->
   <section class="hero-section text-center py-5 mb-5 position-relative overflow-hidden">
     <div class="hero-glow-ambient"></div>
     
     <div class="animate-fade-in">
-      <div class="hero-badge-pill mb-4 floating-anim">
-        <span class="badge bg-emerald text-dark font-orbitron px-2 py-1 me-1 badge-pulse"><i class="fa-solid fa-bolt"></i> v2.0 ACTIVE ⚡</span>
-        <span class="text-zinc-light" data-i18n="hero_badge">🚀 Next-Gen Roblox Script Vault</span>
+      <!-- Real-time Status Ticker HUD -->
+      <div class="status-ticker-hud floating-anim">
+        <span class="status-dot-live"></span>
+        <span class="text-white fw-bold">VAULT OPERATIONAL</span>
+        <span class="text-zinc-subtle">•</span>
+        <span>⚡ 14ms Response</span>
+        <span class="text-zinc-subtle">•</span>
+        <span>🛡️ 100% Undetected</span>
+        <span class="text-zinc-subtle">•</span>
+        <span>🔑 Key Gateway Active</span>
       </div>
 
       <h1 class="display-3 font-orbitron fw-extrabold text-white mb-3 tracking-tight">
-        <span data-i18n="hero_title_1">ROBLOX SCRIPT</span> <span class="gradient-gold-text ms-1" data-i18n="hero_title_2">NEXUS</span> ✨
+        <span data-i18n="hero_title_1">ROBLOX SCRIPT</span> <span class="gradient-silver-text ms-1" data-i18n="hero_title_2">NEXUS</span>
       </h1>
       
       <p class="lead text-zinc-muted max-w-700 mx-auto mb-4 animate-fade-in animate-delay-1" data-i18n="hero_desc">
-        🎯 High-performance, obfuscated Lua scripts & loadout builder for top Roblox game maps. 100% Free, secure, & updated daily. 🛡️
+        High-performance, obfuscated Lua scripts & loadout builder for top Roblox games. 100% Free, secure, & updated daily.
       </p>
 
       <!-- Stats Bar -->
       <div class="d-flex flex-wrap align-items-center justify-content-center gap-4 mb-4 text-zinc-muted small font-orbitron animate-fade-in animate-delay-1">
-        <div>🎮 <span class="text-white font-monospace"><%= maps ? maps.length : 0 %></span> Maps Vault</div>
+        <div><i class="fa-solid fa-cube text-white me-1"></i> <span class="text-white font-monospace"><%= maps ? maps.length : 0 %></span> Maps Vault</div>
         <div class="text-zinc-subtle">•</div>
-        <div>🛡️ <span class="text-emerald fw-bold">100%</span> Executor Safe</div>
+        <div><i class="fa-solid fa-shield-halved text-white me-1"></i> <span class="text-white fw-bold">100%</span> Executor Safe</div>
         <div class="text-zinc-subtle">•</div>
-        <div>🔑 Encrypted 24H Loaders</div>
+        <div><i class="fa-solid fa-key text-white me-1"></i> Encrypted 24H Loaders</div>
         <div class="text-zinc-subtle">•</div>
-        <div>⚡ Instant Loadstring Copy</div>
+        <div><i class="fa-solid fa-bolt text-white me-1"></i> Instant Loadstrings</div>
       </div>
 
       <!-- Instant Live Search Bar -->
       <div class="search-wrapper max-w-650 mx-auto position-relative z-3 animate-fade-in animate-delay-2">
         <div class="input-group input-group-lg search-input-group shadow-lg">
           <span class="input-group-text bg-dark-glass text-zinc-muted border-zinc border-end-0">
-            🔍
+            <i class="fa-solid fa-magnifying-glass"></i>
           </span>
-          <input type="text" id="searchInput" class="form-control bg-dark-glass text-white border-zinc border-start-0" placeholder="Search game maps or scripts (e.g. Blox Fruits, Aimbot)..." data-i18n-placeholder="search_placeholder" autocomplete="off">
+          <input type="text" id="searchInput" class="form-control bg-dark-glass text-white border-zinc border-start-0" placeholder="Search game maps or scripts (Press '/' to search, e.g. Blox Fruits, Rivals)..." data-i18n-placeholder="search_placeholder" autocomplete="off">
           <button class="btn btn-zinc-white font-orbitron px-4" type="button" id="searchBtn">
-            <span data-i18n="search_btn">SEARCH 🚀</span>
+            <span data-i18n="search_btn">SEARCH</span>
           </button>
         </div>
 
         <!-- Quick Filter Tags -->
         <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mt-3 small font-orbitron text-secondary">
           <span class="text-zinc-muted">Quick Tags:</span>
-          <span class="badge bg-zinc-dark border border-secondary text-warning px-2 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Blox Fruits'; document.getElementById('searchBtn').click();">🍎 Blox Fruits</span>
-          <span class="badge bg-zinc-dark border border-secondary text-warning px-2 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Rivals'; document.getElementById('searchBtn').click();">🔫 Rivals</span>
-          <span class="badge bg-zinc-dark border border-secondary text-warning px-2 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Aimbot'; document.getElementById('searchBtn').click();">🎯 Aimbot / ESP</span>
-          <span class="badge bg-zinc-dark border border-secondary text-warning px-2 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Anime'; document.getElementById('searchBtn').click();">⚔️ Anime</span>
+          <span class="badge bg-zinc-dark border border-secondary text-zinc-light px-3 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Blox Fruits'; document.getElementById('searchBtn').click();">🍎 Blox Fruits</span>
+          <span class="badge bg-zinc-dark border border-secondary text-zinc-light px-3 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Rivals'; document.getElementById('searchBtn').click();">🔫 Rivals</span>
+          <span class="badge bg-zinc-dark border border-secondary text-zinc-light px-3 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Aimbot'; document.getElementById('searchBtn').click();">🎯 Aimbot / ESP</span>
+          <span class="badge bg-zinc-dark border border-secondary text-zinc-light px-3 py-1 cursor-pointer" onclick="document.getElementById('searchInput').value='Arsenal'; document.getElementById('searchBtn').click();">⚔️ Arsenal</span>
         </div>
 
         <!-- AJAX Live Search Results Dropdown -->
@@ -142,8 +67,8 @@
 
       <!-- Get Daily 24-Hour Key Banner CTA -->
       <div class="mt-4 animate-fade-in animate-delay-2">
-        <a href="/key" onclick="if(window.triggerGetDailyKey){window.triggerGetDailyKey(event); return false;}" class="btn btn-warning text-dark btn-lg font-orbitron fw-bold px-5 py-3 rounded-pill shadow-lg border-0 text-decoration-none d-inline-block gold-glow-btn">
-          🔑 GET YOUR FREE 24-HOUR KEY <i class="fa-solid fa-arrow-right ms-2"></i>
+        <a href="/key" onclick="if(window.triggerGetDailyKey){window.triggerGetDailyKey(event); return false;}" class="btn btn-zinc-white btn-lg font-orbitron fw-bold px-5 py-3 rounded-pill shadow-lg border-0 text-decoration-none d-inline-block titanium-glow-btn">
+          <i class="fa-solid fa-key me-2"></i> GET YOUR FREE 24-HOUR KEY <i class="fa-solid fa-arrow-right ms-2"></i>
         </a>
       </div>
     </div>
@@ -153,7 +78,7 @@
   <% if (featuredMaps && featuredMaps.length > 0) { %>
     <section class="featured-section mb-5">
       <div class="d-flex align-items-center justify-content-between mb-3">
-        <h4 class="font-orbitron text-white mb-0"><i class="fa-solid fa-fire text-rose me-2"></i><span data-i18n="featured_maps">FEATURED MAPS</span></h4>
+        <h4 class="font-orbitron text-white mb-0"><i class="fa-solid fa-fire text-secondary me-2"></i><span data-i18n="featured_maps">FEATURED MAPS</span></h4>
         <span class="badge bg-dark border border-secondary text-zinc-muted px-3 py-2 font-orbitron" data-i18n="trending_now">TRENDING NOW</span>
       </div>
 
@@ -211,19 +136,19 @@
                 <img src="<%= map.image || 'https://via.placeholder.com/800x400/09090b/27272a?text=' + encodeURIComponent(map.name) %>" class="card-img-top w-100 h-100 object-fit-cover map-img" alt="<%= map.name %>" loading="lazy">
                 <div class="map-overlay-badge position-absolute top-0 end-0 m-3">
                   <span class="badge bg-dark border border-secondary text-zinc-light font-orbitron px-3 py-2 shadow-sm">
-                    📜 <%= map.script_count || 0 %> Scripts
+                    <i class="fa-solid fa-code me-1 text-white"></i> <%= map.script_count || 0 %> Scripts
                   </span>
                 </div>
               </div>
               
               <div class="card-body d-flex flex-column p-4">
-                <h4 class="card-title font-orbitron text-white mb-2">🎮 <%= map.name %></h4>
+                <h4 class="card-title font-orbitron text-white mb-2"><%= map.name %></h4>
                 <p class="card-text text-zinc-muted small line-clamp-2 mb-4 flex-grow-1">
                   <%= map.description %>
                 </p>
                 <div class="d-flex align-items-center justify-content-between mt-auto">
                   <a href="/map/<%= map.id %>" class="btn btn-zinc-dark rounded-pill w-100 font-orbitron py-2 fw-bold border-secondary">
-                    ⚡ <span data-i18n="view_scripts">EXPLORE VAULT</span> <i class="fa-solid fa-arrow-right ms-1 text-warning"></i>
+                    <span data-i18n="view_scripts">EXPLORE VAULT</span> <i class="fa-solid fa-arrow-right ms-1 text-white"></i>
                   </a>
                 </div>
               </div>

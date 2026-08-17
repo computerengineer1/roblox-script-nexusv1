@@ -22,43 +22,43 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   
-  <!-- CRITICAL: Bootstrap CSS (render-blocking but essential for layout) -->
+  <!-- CRITICAL: Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   
-  <!-- CRITICAL: Custom CSS (small, essential for first paint) -->
+  <!-- CRITICAL: Custom Luxury Black & Gray UI Stylesheet -->
   <link rel="stylesheet" href="/css/style.css">
 
-  <!-- NON-BLOCKING: Google Fonts loaded async (won't block rendering) -->
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet"></noscript>
+  <!-- NON-BLOCKING: Google Fonts loaded async -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet"></noscript>
   
-  <!-- NON-BLOCKING: FontAwesome loaded async (icons appear after first paint) -->
+  <!-- NON-BLOCKING: FontAwesome loaded async -->
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
 
-  <!-- Instant skeleton paint: show page structure immediately -->
+  <!-- Instant skeleton paint: show dark structure immediately -->
   <style>
-    body{background:#09090b;color:#fafafa;font-family:system-ui,-apple-system,sans-serif}
-    .navbar{background:rgba(9,9,11,.85)!important;backdrop-filter:blur(12px)}
-    .glass-card{background:rgba(24,24,27,.65);border:1px solid rgba(255,255,255,.08);border-radius:16px}
+    body{background:#050507;color:#f4f4f5;font-family:system-ui,-apple-system,sans-serif}
+    .navbar{background:rgba(5,5,7,.85)!important;backdrop-filter:blur(16px)}
+    .glass-card{background:rgba(18,18,22,.75);border:1px solid rgba(255,255,255,.08);border-radius:16px}
     .font-orbitron{font-family:'Orbitron',system-ui,sans-serif}
-    .btn-warning{background:#ffaa00;border-color:#ffaa00;color:#0d0d12}
+    .btn-zinc-white{background:#ffffff;color:#050507;border:1px solid #fff}
   </style>
 
   <script>
     window.currentUser = <%- JSON.stringify(typeof currentUser !== 'undefined' ? currentUser : null) %>;
 
-    // Standalone Overlay Creator (100% Zero Dependency & Instant Inline Loading)
+    // Standalone Titanium Overlay Creator
     function createCustomNexusOverlay(modalId, innerHtml) {
       var old = document.getElementById(modalId);
       if (old && old.parentNode) old.parentNode.removeChild(old);
 
       var overlay = document.createElement('div');
       overlay.id = modalId;
-      overlay.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(9, 9, 14, 0.94) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 15px !important; box-sizing: border-box !important; opacity: 1 !important; visibility: visible !important;';
+      overlay.style.cssText = 'position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(5, 5, 7, 0.94) !important; backdrop-filter: blur(14px) !important; -webkit-backdrop-filter: blur(14px) !important; z-index: 9999999 !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 15px !important; box-sizing: border-box !important; opacity: 1 !important; visibility: visible !important;';
 
       var dialog = document.createElement('div');
-      dialog.style.cssText = 'width: 100% !important; max-width: 450px !important; background: #0e0e13 !important; border: 1.5px solid #ffaa00 !important; border-radius: 18px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 30px rgba(255,170,0,0.25) !important; padding: 25px !important; text-align: center !important; color: #ffffff !important; position: relative !important; font-family: system-ui, -apple-system, sans-serif !important;';
+      dialog.style.cssText = 'width: 100% !important; max-width: 460px !important; background: #0c0c10 !important; border: 1.5px solid rgba(255, 255, 255, 0.2) !important; border-radius: 20px !important; box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(255,255,255,0.06) !important; padding: 28px !important; text-align: center !important; color: #ffffff !important; position: relative !important; font-family: system-ui, -apple-system, sans-serif !important;';
 
       dialog.innerHTML = innerHtml;
       overlay.appendChild(dialog);
@@ -75,14 +75,14 @@
 
     function showLoginRequiredModal() {
       var html = 
-        '<div style="position:absolute; top:12px; right:15px; cursor:pointer; color:#888; font-size:24px; font-weight:bold;" onclick="var m=document.getElementById(\'loginRequiredKeyModal\'); if(m) m.remove();">&times;</div>' +
-        '<div style="font-size: 3rem; color: #ffaa00; margin-bottom: 10px;"><i class="fa-solid fa-user-shield"></i></div>' +
-        '<h3 style="font-family:inherit; font-size:1.4rem; color:#fff; margin-bottom:10px; font-weight:bold;">ACCOUNT REQUIRED</h3>' +
-        '<p style="color:#aaa; font-size:0.9rem; margin-bottom:20px; line-height:1.5;">You must be logged in to generate your personal 24-hour script key. Please sign in or create a free account to continue!</p>' +
-        '<a href="/profile" style="display:block; width:100%; padding:14px; background:#ffaa00; color:#0d0d12; font-weight:bold; text-decoration:none; border-radius:30px; margin-bottom:10px; font-size:0.95rem; box-shadow: 0 4px 15px rgba(255,170,0,0.4); box-sizing:border-box;">' +
+        '<div style="position:absolute; top:15px; right:18px; cursor:pointer; color:#888; font-size:22px; font-weight:bold;" onclick="var m=document.getElementById(\'loginRequiredKeyModal\'); if(m) m.remove();">&times;</div>' +
+        '<div style="font-size: 2.8rem; color: #ffffff; margin-bottom: 10px;"><i class="fa-solid fa-shield-halved"></i></div>' +
+        '<h3 style="font-family:inherit; font-size:1.35rem; color:#fff; margin-bottom:10px; font-weight:bold;">ACCOUNT REQUIRED</h3>' +
+        '<p style="color:#a1a1aa; font-size:0.9rem; margin-bottom:20px; line-height:1.5;">You must be signed in to generate your unique 24-hour executor key. Please create a free account or sign in to continue!</p>' +
+        '<a href="/profile" style="display:block; width:100%; padding:14px; background:#ffffff; color:#050507; font-weight:bold; text-decoration:none; border-radius:30px; margin-bottom:10px; font-size:0.95rem; box-shadow: 0 4px 20px rgba(255,255,255,0.25); box-sizing:border-box;">' +
           '<i class="fa-solid fa-right-to-bracket me-2"></i> SIGN IN / CREATE ACCOUNT' +
         '</a>' +
-        '<button onclick="var m=document.getElementById(\'loginRequiredKeyModal\'); if(m) m.remove();" style="display:block; width:100%; padding:10px; background:transparent; color:#888; border:1px solid #333; border-radius:30px; cursor:pointer; font-size:0.85rem;">' +
+        '<button onclick="var m=document.getElementById(\'loginRequiredKeyModal\'); if(m) m.remove();" style="display:block; width:100%; padding:10px; background:transparent; color:#71717a; border:1px solid #27272a; border-radius:30px; cursor:pointer; font-size:0.85rem;">' +
           'Cancel' +
         '</button>';
 
@@ -91,21 +91,21 @@
 
     function showUniqueKeyModal() {
       var html = 
-        '<div style="position:absolute; top:12px; right:15px; cursor:pointer; color:#888; font-size:24px; font-weight:bold;" onclick="var m=document.getElementById(\'uniqueKeyGatewayModal\'); if(m) m.remove();">&times;</div>' +
-        '<div id="keyTimerSpinner" style="width:3rem; height:3rem; border:3px solid #333; border-top:3px solid #ffaa00; border-radius:50%; margin:0 auto 15px; animation: keySpin 1s linear infinite;"></div>' +
+        '<div style="position:absolute; top:15px; right:18px; cursor:pointer; color:#888; font-size:22px; font-weight:bold;" onclick="var m=document.getElementById(\'uniqueKeyGatewayModal\'); if(m) m.remove();">&times;</div>' +
+        '<div id="keyTimerSpinner" style="width:2.8rem; height:2.8rem; border:3px solid #27272a; border-top:3px solid #ffffff; border-radius:50%; margin:0 auto 15px; animation: keySpin 1s linear infinite;"></div>' +
         '<style>@keyframes keySpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>' +
-        '<h3 style="font-family:inherit; font-size:1.3rem; color:#fff; margin-bottom:8px;" id="keyModalStatus">Verifying Sponsor Visit...</h3>' +
-        '<p style="color:#aaa; font-size:0.85rem; margin-bottom:15px;">Generating your personal un-shareable 24-hour script key in <strong style="color:#ffaa00; font-size:1.2rem;" id="keyCountdownVal">5</strong> seconds...</p>' +
-        '<div style="background:#1a1a24; height:8px; border-radius:4px; overflow:hidden; margin-bottom:15px;">' +
-          '<div id="keyProgressBar" style="background:#ffaa00; height:100%; width:0%; transition: width 1s linear;"></div>' +
+        '<h3 style="font-family:inherit; font-size:1.3rem; color:#fff; margin-bottom:8px;" id="keyModalStatus">Verifying Sponsor Access...</h3>' +
+        '<p style="color:#a1a1aa; font-size:0.85rem; margin-bottom:15px;">Generating your personal 24-hour key in <strong style="color:#ffffff; font-size:1.2rem;" id="keyCountdownVal">5</strong> seconds...</p>' +
+        '<div style="background:#18181b; height:6px; border-radius:3px; overflow:hidden; margin-bottom:18px; border:1px solid #27272a;">' +
+          '<div id="keyProgressBar" style="background:#ffffff; height:100%; width:0%; transition: width 1s linear;"></div>' +
         '</div>' +
         '<div id="keyResultArea" style="display:none;">' +
-          '<div style="background:#14141d; padding:12px; border-radius:10px; border:1px solid #333; margin-bottom:15px;">' +
-            '<small style="display:block; color:#888; text-transform:uppercase; font-size:0.75rem; margin-bottom:5px;">Your Personal 24-Hour Key:</small>' +
-            '<code id="generatedKeyBox" style="font-size:1.1rem; color:#ffaa00; font-family:monospace; user-select:all; word-break:break-all;">NEXUS-KEY-LOADING</code>' +
+          '<div style="background:#141418; padding:14px; border-radius:12px; border:1px solid #27272a; margin-bottom:15px;">' +
+            '<small style="display:block; color:#71717a; text-transform:uppercase; font-size:0.75rem; margin-bottom:6px; letter-spacing:0.5px;">Your Personal 24-Hour Key:</small>' +
+            '<code id="generatedKeyBox" style="font-size:1.15rem; color:#ffffff; font-family:monospace; user-select:all; word-break:break-all; font-weight:bold;">NEXUS-KEY-LOADING</code>' +
           '</div>' +
-          '<button id="copyGeneratedKeyBtn" style="display:block; width:100%; padding:12px; background:#ffaa00; color:#0d0d12; font-weight:bold; border:none; border-radius:30px; cursor:pointer; font-size:0.9rem;">' +
-            '<i class="fa-solid fa-copy me-2"></i> Copy Personal Key' +
+          '<button id="copyGeneratedKeyBtn" style="display:block; width:100%; padding:13px; background:#ffffff; color:#050507; font-weight:bold; border:none; border-radius:30px; cursor:pointer; font-size:0.9rem; box-shadow: 0 0 20px rgba(255,255,255,0.3);">' +
+            '<i class="fa-solid fa-copy me-2"></i> COPY 24-HOUR KEY' +
           '</button>' +
         '</div>';
 
@@ -128,7 +128,7 @@
         if (seconds <= 0) {
           clearInterval(interval);
           if (spinner) spinner.style.display = 'none';
-          if (statusTxt) statusTxt.textContent = 'Key Unlocked & Generated!';
+          if (statusTxt) statusTxt.textContent = 'Key Unlocked & Ready!';
 
           var fallbackKey = 'NEXUS-KEY-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + new Date().toISOString().slice(0,10).replace(/-/g,'');
 
@@ -146,30 +146,20 @@
               copyBtn.onclick = function() {
                 if (navigator.clipboard) {
                   navigator.clipboard.writeText(finalKey);
-                } else {
-                  var ta = document.createElement('textarea');
-                  ta.value = finalKey;
-                  document.body.appendChild(ta);
-                  ta.select();
-                  document.execCommand('copy');
-                  document.body.removeChild(ta);
                 }
                 alert('Key copied to clipboard: ' + finalKey);
                 if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
               };
             }
           })
-          .catch(function(err) {
+          .catch(function() {
             if (keyBox) keyBox.textContent = fallbackKey;
             if (resultArea) resultArea.style.display = 'block';
             if (copyBtn) {
               copyBtn.onclick = function() {
-                var ta = document.createElement('textarea');
-                ta.value = fallbackKey;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
+                if (navigator.clipboard) {
+                  navigator.clipboard.writeText(fallbackKey);
+                }
                 alert('Key copied to clipboard: ' + fallbackKey);
                 if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
               };
@@ -204,7 +194,7 @@
     <div class="container">
       <a class="navbar-brand d-flex align-items-center gap-2" href="/">
         <img src="/images/logo.png" alt="Script Nexus Logo" width="34" height="34" class="rounded-2 border border-secondary p-1 bg-dark">
-        <span class="brand-text">SCRIPT<span class="text-warning ms-1">NEXUS</span></span>
+        <span class="brand-text">SCRIPT<span class="text-zinc-light ms-1">NEXUS</span></span>
       </a>
       
       <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#nexusNav" aria-controls="nexusNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -214,20 +204,32 @@
       <div class="collapse navbar-collapse" id="nexusNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
           <li class="nav-item">
-            <a class="nav-link nav-nexus" href="/">🏠 <span data-i18n="home">Home</span></a>
+            <a class="nav-link nav-nexus" href="/"><i class="fa-solid fa-house me-1"></i> <span data-i18n="home">Home</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link nav-nexus" href="/playground">⚡ <span data-i18n="playground">Playground</span></a>
+            <a class="nav-link nav-nexus" href="/playground"><i class="fa-solid fa-terminal me-1"></i> <span data-i18n="playground">Playground</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link nav-nexus" href="/loadout">📦 <span data-i18n="loadouts">Loadouts</span> <span id="loadoutBadge" class="badge bg-warning text-dark border border-secondary rounded-pill d-none">0</span></a>
+            <a class="nav-link nav-nexus" href="/loadout"><i class="fa-solid fa-layer-group me-1"></i> <span data-i18n="loadouts">Loadouts</span> <span id="loadoutBadge" class="badge bg-dark border border-secondary text-white rounded-pill d-none">0</span></a>
           </li>
           <li class="nav-item">
-            <a href="/key" class="nav-link nav-nexus text-warning fw-bold border-0 bg-transparent gold-glow-btn px-3 rounded-pill ms-lg-2" onclick="if(window.triggerGetDailyKey){window.triggerGetDailyKey(event); return false;}">🔑 <span>Get 24h Key</span></a>
+            <a href="/key" class="nav-link nav-nexus text-white fw-bold border-0 bg-transparent titanium-glow-btn px-3 rounded-pill ms-lg-2" onclick="if(window.triggerGetDailyKey){window.triggerGetDailyKey(event); return false;}"><i class="fa-solid fa-key me-1"></i> <span>Get 24h Key</span></a>
           </li>
         </ul>
         
-        <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2">
+          <!-- Command Palette Shortcut Trigger -->
+          <button onclick="if(window.openCmdPalette) window.openCmdPalette();" class="btn btn-zinc-dark btn-sm px-3 rounded-pill font-orbitron d-none d-md-flex align-items-center gap-2" title="Quick Search (Ctrl + K)">
+            <i class="fa-solid fa-magnifying-glass text-secondary"></i>
+            <span class="kbd-badge">Ctrl + K</span>
+          </button>
+
+          <!-- Sound FX Toggle Button -->
+          <button onclick="window.nexusSFX.toggle();" class="btn sfx-toggle-btn" title="Toggle Sound FX (Press M)">
+            <i class="fa-solid fa-volume-high text-white"></i>
+            <span class="d-none d-lg-inline">SFX</span>
+          </button>
+
           <!-- Language Toggle -->
           <button id="langToggleBtn" onclick="toggleLang()" class="btn btn-zinc-dark btn-sm px-3 rounded-pill font-orbitron" title="Switch Language">
             العربية
